@@ -14,5 +14,5 @@ from .errors import ModelError, NoFlags
 from .snowflake import DISCORD_EPOCH, Snowflake
 from .user import User
 
-__all__ = ['Color', 'Colour', 'DISCORD_EPOCH', 'TextChannel','DMChannel', 'Snowflake',
+__all__ = ['Color', 'Colour', 'DISCORD_EPOCH', 'TextChannel', 'DMChannel', 'Snowflake',
            'VoiceChannel', 'GroupDMChannel', 'CategoryChannel', 'User']
