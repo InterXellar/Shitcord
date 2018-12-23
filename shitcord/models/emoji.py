@@ -24,8 +24,13 @@ class _BaseEmoji(Model):
         return cdn.format_url(cdn.Endpoints.CUSTOM_EMOJI, dict(emoji=self.id), image_format=format)
 
 
-class PartialEmoji(_BaseEmoji, namedtuple('PartialEmoji', 'id name animated')):
-    __slots__ = ()
+class PartialEmoji(_BaseEmoji):
+    __slots__ = ('animated', )
+
+    def __init__(self, data, http):
+        super().__init__(data, http)
+
+        self.animated = data.get('animated', False)
 
     def __str__(self):
         if not self.id:
