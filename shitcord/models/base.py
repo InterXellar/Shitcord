@@ -21,7 +21,7 @@ class Model(abc.ABC):
     """
 
     def __init__(self, model_id, *, http):
-        self._json = None  # The raw dictionary from the Discord API.
+        model_id = model_id or 0
         self.snowflake = Snowflake(int(model_id))
         self.id = self.snowflake.snowflake
         self._http = http

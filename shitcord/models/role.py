@@ -9,7 +9,6 @@ class Role(Model):
     __slots__ = ('_json', 'name', 'color', 'hoist', 'position', 'permissions', 'managed', 'mentionable')
 
     def __init__(self, data, http):
-        self._json = data
         super().__init__(data['id'], http=http)
 
         self.name = data['name']
@@ -19,6 +18,9 @@ class Role(Model):
         self.permissions = Permissions(data['permissions'])
         self.managed = data['managed']
         self.mentionable = data['mentionable']
+
+    def __str__(self):
+        return self.name
 
     def __repr__(self):
         return '<shitcord.Role id={0.id} name={0.name}>'.format(self)

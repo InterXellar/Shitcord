@@ -43,7 +43,6 @@ class _BaseChannel(Model):
     __slots__ = ('snowflake', 'id', '_json', 'type')
 
     def __init__(self, data, http):
-        self._json = data
         super().__init__(data['id'], http=http)
 
         self.type = data['type']
@@ -71,10 +70,6 @@ class PartialChannel(_BaseChannel, abc.Sendable):
     """
 
     def __init__(self, data, http):
-        # Make sure an ID is given at any time.
-        if not data.get('id'):
-            data['id'] = 0
-
         super().__init__(data, http)
 
         self.name = data['name']

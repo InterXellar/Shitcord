@@ -36,7 +36,6 @@ class Flags(enum.IntEnum):
 
 class _BaseUser(Model, abc.DiscordUser):
     def __init__(self, data, http):
-        self._json = data
         super().__init__(data['id'], http=http)
 
         self.username = data['username']
