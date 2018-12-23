@@ -3,6 +3,7 @@
 import enum
 from datetime import datetime
 
+from . import abc
 from .base import Model
 
 __all__ = ['_channel_from_payload', 'TextChannel', 'DMChannel', 'VoiceChannel', 'GroupDMChannel', 'CategoryChannel']
@@ -19,13 +20,11 @@ def _get_as_datetime(payload, key):
     item = payload.get(key)
     if not item:
         return None
-    if type(item) is str:
-        return item
 
     return datetime.utcfromtimestamp(item)
 
 
-class BaseChannel(Model):
+class _BaseChannel(Model):
     """Represents a BaseChannel class all different channel types will implement.
 
     This is literally just a base class to define some basic behavior of all different
@@ -33,11 +32,15 @@ class BaseChannel(Model):
 
     Attributes
     ----------
+    snowflake: Snowflake
+        A :class:`Snowflake` object that represents the model's ID.
     id : int
         The channel's ID.
     type : int
         An integer representing the channel type.
     """
+
+    __slots__ = ('snowflake', 'id', '_json', 'type')
 
     def __init__(self, data, http):
         self._json = data
@@ -48,23 +51,8 @@ class BaseChannel(Model):
     def __repr__(self):
         raise NotImplementedError
 
-    def to_json(self, **kwargs):
-        payload = self._json
-        if kwargs:
-            payload.update(**kwargs)
 
-        attrs = list(filter(lambda attr: not attr.startswith('_') and not callable(getattr(self, attr)), dir(self)))
-        for key in payload.keys():
-            if key not in attrs:
-                continue
-
-            payload[key] = getattr(self, key)
-
-        self._json = payload
-        return payload
-
-
-class PartialChannel(BaseChannel):
+class PartialChannel(_BaseChannel, abc.Sendable):
     """Represents a PartialChannel model from the Discord API.
 
     PartialChannels are very incomplete and thin Channel representations
@@ -72,6 +60,8 @@ class PartialChannel(BaseChannel):
 
     Attributes
     ----------
+    snowflake: Snowflake
+        A :class:`Snowflake` object that represents the model's ID.
     id : int, optional
         The channel's ID.
     type : int
@@ -93,7 +83,7 @@ class PartialChannel(BaseChannel):
         return '<shitcord.PartialChannel id={} name={}>'.format(self.id, self.name)
 
 
-class TextChannel(BaseChannel):
+class TextChannel(_BaseChannel, abc.GuildChannel, abc.Sendable):
     """Represents a TextChannel model from the Discord API.
 
     TextChannel is a very common channel type. As the name says,
@@ -101,6 +91,8 @@ class TextChannel(BaseChannel):
 
     Attributes
     ----------
+    snowflake: Snowflake
+        A :class:`Snowflake` object that represents the model's ID.
     id : int
         The channel's ID.
     type : int
@@ -145,13 +137,15 @@ class TextChannel(BaseChannel):
         return '<shitcord.TextChannel id={} name={} guild_id={} nsfw={}>'.format(self.id, self.name, self.guild_id, self.nsfw)
 
 
-class DMChannel(BaseChannel):
+class DMChannel(_BaseChannel, abc.PrivateChannel, abc.Sendable):
     """Represents a DMChannel model from the Discord API.
 
     This channel type represents a private channel between 2 `User`s.
 
     Attributes
     ----------
+    snowflake: Snowflake
+        A :class:`Snowflake` object that represents the model's ID.
     id : int
         The channel's ID.
     type : int
@@ -175,7 +169,7 @@ class DMChannel(BaseChannel):
         return '<shitcord.DMChannel id={}>'.format(self.id)
 
 
-class VoiceChannel(BaseChannel):
+class VoiceChannel(_BaseChannel, abc.Connectable, abc.GuildChannel):
     """Represents a VoiceChannel model from the Discord API.
 
     VoiceChannels are channels, Users can connect to and transmit audio.
@@ -184,6 +178,8 @@ class VoiceChannel(BaseChannel):
 
     Attributes
     ----------
+    snowflake: Snowflake
+        A :class:`Snowflake` object that represents the model's ID.
     id : int
         The channel's ID.
     type : int
@@ -219,7 +215,7 @@ class VoiceChannel(BaseChannel):
         return '<shitcord.VoiceChannel id={} name={} bitrate={} user_limit={}>'.format(self.id, self.name, self.bitrate, self.user_limit)
 
 
-class GroupDMChannel(BaseChannel):
+class GroupDMChannel(_BaseChannel, abc.PrivateChannel, abc.Sendable):
     """Represents a GroupDMChannel model from the Discord API.
 
     This is actually quite similar to `DMChannel` except that `User`s can
@@ -227,6 +223,8 @@ class GroupDMChannel(BaseChannel):
 
     Attributes
     ----------
+    snowflake: Snowflake
+        A :class:`Snowflake` object that represents the model's ID.
     id : int
         The channel's ID.
     type : int
@@ -262,7 +260,7 @@ class GroupDMChannel(BaseChannel):
         return '<shitcord.GroupDMChannel id={} name={} owner_id={}>'.format(self.id, self.name, self.owner_id)
 
 
-class CategoryChannel(BaseChannel):
+class CategoryChannel(_BaseChannel, abc.GuildChannel):
     """Represents a CategoryChannel model from the Discord API.
 
     Categories always belong to a `Guild`.
@@ -271,6 +269,8 @@ class CategoryChannel(BaseChannel):
 
     Attributes
     ----------
+    snowflake: Snowflake
+        A :class:`Snowflake` object that represents the model's ID.
     id : int
         The channel's ID.
     type : int

@@ -24,7 +24,7 @@ class EventEmitter:
     __callbacks = collections.defaultdict(list)
     __lock = trio.Lock()
 
-    def add_listener(self, event, callback=None, *, recurring=True):
+    def add_listener(self, event, callback: typing.Callable = None, *, recurring=True):
         """Registers a callback for the specified event.
 
         Can be used as decorator if only the `event` parameter is specified.
@@ -65,7 +65,7 @@ class EventEmitter:
 
     once = functools.partial(add_listener, recurring=False)
 
-    def remove_listener(self, event, callback):
+    def remove_listener(self, event, callback: typing.Callable):
         """Removes a callback for a given event.
 
         You need to pass the event's name and the corresponding callback
@@ -120,7 +120,7 @@ class EventEmitter:
 
         Raises
         ------
-        EmitError
+        EventError
             Will be raised when an unregistered event was emitted.
         """
 
@@ -156,7 +156,7 @@ class EventEmitter:
 
         Raises
         ------
-        EmitError
+        EventError
             Will be raised when an unregistered event was emitted.
         """
 

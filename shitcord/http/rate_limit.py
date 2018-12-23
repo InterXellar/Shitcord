@@ -23,12 +23,12 @@ class APIResponse:
         self.is_global = self._headers.get('X-RateLimit-Global', False)
 
     def __repr__(self):
-        return '<APIResposne for bucket {} with headers {}>'.format(self._bucket, self._headers)
+        return '<APIResponse for bucket {} with headers {}>'.format(self._bucket, self._headers)
 
     def _parse_reset(self, reset):
         now = parsedate_to_datetime(self.date)
-        reset = datetime.datetime.fromtimestamp(reset, datetime.timezone.utc)
-        return (reset - now).total_seconds() + .2
+        res = datetime.datetime.fromtimestamp(reset, datetime.timezone.utc)
+        return (res - now).total_seconds() + .2
 
     @property
     def is_rate_limited(self):
@@ -51,7 +51,13 @@ class APIResponse:
         """Returns a cooldown for the current API response."""
 
         logger.debug('Sleeping for %s seconds due to an exhausted rate limit...', duration)
-        return await trio.sleep(duration)
+        try:
+            return await trio.sleep(duration)
+        except ValueError:
+            # trio.sleep doesn't like negative values.
+            # For the case of a stupid rate limit reset header that computes to a negative rate limit duration
+            # we have to catch the ValueError.
+            pass
 
 
 class Limiter:

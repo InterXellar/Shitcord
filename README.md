@@ -3,7 +3,7 @@
     <h1>~~ Shitcord ~~</h1>
     <strong>A shitty, probably not even that shitty Discord API wrapper.</strong>
     <br><br>
-    <a href="https://www.codacy.com/app/itsVale/Shitcord?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=itsVale/Shitcord&amp;utm_campaign=Badge_Grade"><img src="https://api.codacy.com/project/badge/Grade/b3ed9f02a50142bf9fd337978be88b24" /></a>
+    <a class="badge-align" href="https://www.codacy.com/app/itsVale/Shitcord?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=itsVale/Shitcord&amp;utm_campaign=Badge_Grade"><img src="https://api.codacy.com/project/badge/Grade/b3ed9f02a50142bf9fd337978be88b24"/></a>
     &nbsp;
     <a href="https://travis-ci.com/itsVale/Shitcord"><img src="https://travis-ci.com/itsVale/Shitcord.svg?branch=async" /></a>
     &nbsp;
@@ -17,7 +17,7 @@
 
 _Though this library is incomplete yet, contributions are very appreciated!_
 
-# Installation
+## Installation
 For now, you can only install the dev branch which is constantly updated.
 ```
 pip install -U https://github.com/itsVale/Shitcord/archive/async.zip
@@ -28,7 +28,7 @@ incomplete at this moment what you can see from the code below.
   
 __Note that this branch features an asynchronous version of Shitcord that hasn't got a Gateway implementation yet.__
 
-# Usage
+## Usage
 ```python
 import logging
 
@@ -57,5 +57,5 @@ async def spam_the_api(channel_id: int):
 trio.run(spam_the_api, channel_id)
 ```
 
-# Support
+## Support
 Need help with something or just want to hang out with more or less cool guys? [Join our cool Discord server!](https://discord.gg/HbKGrVT)
