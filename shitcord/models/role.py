@@ -19,3 +19,10 @@ class Role(Model):
         self.permissions = Permissions(data['permissions'])
         self.managed = data['managed']
         self.mentionable = data['mentionable']
+
+    def __repr__(self):
+        return '<shitcord.Role id={0.id} name={0.name}>'.format(self)
+
+    @property
+    def mention(self):
+        return '<@&{}>'.format(self.id)
