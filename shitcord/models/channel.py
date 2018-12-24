@@ -50,6 +50,12 @@ class _BaseChannel(Model):
     def __repr__(self):
         raise NotImplementedError
 
+    @property
+    def mention(self):
+        """Returns a string that mentions the channel."""
+
+        return '<#{}>'.format(self.id)
+
 
 class PartialChannel(_BaseChannel, abc.Sendable):
     """Represents a PartialChannel model from the Discord API.
