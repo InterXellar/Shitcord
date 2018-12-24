@@ -12,7 +12,9 @@ with open('shitcord/__init__.py', 'r') as f:
     version = match.group(1)
 
 # No extra requirements at the moment ¯\_(ツ)_/¯
-extra_requires = {}
+extra_requires = {
+    'docs': ['sphinx==1.8.2', 'sphinx_rtd_theme>=0.4.2']
+}
 
 setup(
     name='Shitcord',
