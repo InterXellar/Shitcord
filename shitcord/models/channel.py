@@ -32,15 +32,15 @@ class _BaseChannel(Model):
 
     Attributes
     ----------
-    snowflake: Snowflake
-        A :class:`Snowflake` object that represents the model's ID.
+    snowflake: shitcord.models.Snowflake
+        A `Snowflake` object that represents the model's ID.
     id : int
         The channel's ID.
     type : int
         An integer representing the channel type.
     """
 
-    __slots__ = ('snowflake', 'id', '_json', 'type')
+    __slots__ = ('snowflake', 'id', 'type')
 
     def __init__(self, data, http):
         super().__init__(data['id'], http=http)
@@ -65,8 +65,8 @@ class PartialChannel(_BaseChannel, abc.Sendable):
 
     Attributes
     ----------
-    snowflake: Snowflake
-        A :class:`Snowflake` object that represents the model's ID.
+    snowflake: shitcord.models.Snowflake
+        A `Snowflake` object that represents the model's ID.
     id : int, optional
         The channel's ID.
     type : int
@@ -92,8 +92,8 @@ class TextChannel(_BaseChannel, abc.GuildChannel, abc.Sendable):
 
     Attributes
     ----------
-    snowflake: Snowflake
-        A :class:`Snowflake` object that represents the model's ID.
+    snowflake: shitcord.models.Snowflake
+        A `Snowflake` object that represents the model's ID.
     id : int
         The channel's ID.
     type : int
@@ -145,8 +145,8 @@ class DMChannel(_BaseChannel, abc.PrivateChannel, abc.Sendable):
 
     Attributes
     ----------
-    snowflake: Snowflake
-        A :class:`Snowflake` object that represents the model's ID.
+    snowflake: shitcord.models.Snowflake
+        A `Snowflake` object that represents the model's ID.
     id : int
         The channel's ID.
     type : int
@@ -179,8 +179,8 @@ class VoiceChannel(_BaseChannel, abc.Connectable, abc.GuildChannel):
 
     Attributes
     ----------
-    snowflake: Snowflake
-        A :class:`Snowflake` object that represents the model's ID.
+    snowflake: shitcord.models.Snowflake
+        A `Snowflake` object that represents the model's ID.
     id : int
         The channel's ID.
     type : int
@@ -224,8 +224,8 @@ class GroupDMChannel(_BaseChannel, abc.PrivateChannel, abc.Sendable):
 
     Attributes
     ----------
-    snowflake: Snowflake
-        A :class:`Snowflake` object that represents the model's ID.
+    snowflake: shitcord.models.Snowflake
+        A `Snowflake` object that represents the model's ID.
     id : int
         The channel's ID.
     type : int
@@ -270,8 +270,8 @@ class CategoryChannel(_BaseChannel, abc.GuildChannel):
 
     Attributes
     ----------
-    snowflake: Snowflake
-        A :class:`Snowflake` object that represents the model's ID.
+    snowflake: shitcord.models.Snowflake
+        A `Snowflake` object that represents the model's ID.
     id : int
         The channel's ID.
     type : int
