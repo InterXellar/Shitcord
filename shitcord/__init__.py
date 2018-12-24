@@ -28,7 +28,7 @@ __copyright__ = '(c) 2018 Valentin B.'
 __url__ = 'https://github.com/itsVale/Shitcord'
 
 VersionInfo = namedtuple('VersionInfo', 'major minor micro releaselevel')
-version_info = VersionInfo(major=0, minor=0, micro=1, releaselevel='beta')
+version_info = VersionInfo(major=0, minor=0, micro=2, releaselevel='beta')
 
 fmt = '[%(levelname)s] %(asctime)s - %(name)s:%(lineno)d - %(message)s'
 logging.basicConfig(format=fmt, level=logging.INFO)
