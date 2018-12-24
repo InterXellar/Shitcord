@@ -1,13 +1,21 @@
 # -*- coding: utf-8 -*-
 
-from collections import namedtuple
-
 from ..utils import cdn
 from .base import Model
 from .user import User
 
 
 class _BaseEmoji(Model):
+    """Represents a base class for Emoji implementations.
+
+    Attributes
+    ----------
+    snowflake : shitcord.models.Snowflake
+        A `Snowflake` object representing the emoji's ID.
+    name : str
+        Either the custom emoji's name or a unicode representation of the emoji.
+    """
+
     __slots__ = ('name', )
 
     def __init__(self, data, http):
@@ -25,6 +33,22 @@ class _BaseEmoji(Model):
 
 
 class PartialEmoji(_BaseEmoji):
+    """Represents a PartialEmoji model from the Discord API.
+
+    This is a special form of Emoji where only a few parameters are given.
+    In this case, the name can either be a unicode emoji or a custom emoji's name.
+    In such a case, a bool may be included that tells whether the emoji is animated.
+
+    Attributes
+    ----------
+    snowflake : shitcord.models.Snowflake, optional
+        A `Snowflake` object that represents the emoji's ID.
+    name : str
+        Either the custom emoji's name or a unicode representation of the emoji.
+    animated : bool, optional
+        A boolean indicating whether the emoji is animated or not.
+    """
+
     __slots__ = ('animated', )
 
     def __init__(self, data, http):
@@ -54,6 +78,28 @@ class PartialEmoji(_BaseEmoji):
 
 
 class Emoji(_BaseEmoji):
+    """Represents an Emoji model from the Discord API.
+
+    Attributes
+    ----------
+    snowflake : shitcord.models.Snowflake, optional
+        A `Snowflake` object that represents the emoji's ID.
+    name : str
+        Either the custom emoji's name or a unicode representation of the emoji.
+    guild_id : int
+        The ID of the Guild this emoji belongs to.
+    roles : list
+        A list of role IDs which are whitelisted for this emoji.
+    user : shitcord.models.User
+        A `User` object representing the creator of the emoji.
+    require_colons : bool, optional
+        A boolean indicating whether this emoji requires colons or not.
+    managed : bool, optional
+        A boolean indicating whether this emoji is managed or not.
+    animated : bool, optional
+        A boolean indicating whether the emoji is animated or not.
+    """
+
     __slots__ = ('guild_id', 'roles', 'user', 'required_colons', 'managed', 'animated')
 
     def __init__(self, guild_id, data, http):
