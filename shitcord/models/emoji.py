@@ -10,8 +10,8 @@ class _BaseEmoji(Model):
 
     Attributes
     ----------
-    snowflake : shitcord.models.Snowflake
-        A `Snowflake` object representing the emoji's ID.
+    snowflake : :class:`Snowflake`
+        A :class:`Snowflake` object representing the emoji's ID.
     name : str
         Either the custom emoji's name or a unicode representation of the emoji.
     """
@@ -28,8 +28,8 @@ class _BaseEmoji(Model):
 
     @property
     def url(self):
-        format = 'gif' if self.animated else 'png'
-        return cdn.format_url(cdn.Endpoints.CUSTOM_EMOJI, dict(emoji=self.id), image_format=format)
+        image_format = 'gif' if self.animated else 'png'
+        return cdn.format_url(cdn.Endpoints.CUSTOM_EMOJI, dict(emoji=self.id), image_format=image_format)
 
 
 class PartialEmoji(_BaseEmoji):
@@ -41,8 +41,8 @@ class PartialEmoji(_BaseEmoji):
 
     Attributes
     ----------
-    snowflake : shitcord.models.Snowflake, optional
-        A `Snowflake` object that represents the emoji's ID.
+    snowflake : :class:`Snowflake`, optional
+        A :class:`Snowflake` object that represents the emoji's ID.
     name : str
         Either the custom emoji's name or a unicode representation of the emoji.
     animated : bool, optional
@@ -82,16 +82,16 @@ class Emoji(_BaseEmoji):
 
     Attributes
     ----------
-    snowflake : shitcord.models.Snowflake, optional
-        A `Snowflake` object that represents the emoji's ID.
+    snowflake : :class:`Snowflake`, optional
+        A :class:`Snowflake` object that represents the emoji's ID.
     name : str
         Either the custom emoji's name or a unicode representation of the emoji.
     guild_id : int
         The ID of the Guild this emoji belongs to.
     roles : list
         A list of role IDs which are whitelisted for this emoji.
-    user : shitcord.models.User
-        A `User` object representing the creator of the emoji.
+    user : :class:`User`
+        A :class`User` object representing the creator of the emoji.
     require_colons : bool, optional
         A boolean indicating whether this emoji requires colons or not.
     managed : bool, optional

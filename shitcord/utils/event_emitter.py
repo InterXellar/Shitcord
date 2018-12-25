@@ -34,7 +34,7 @@ class EventEmitter:
         ----------
         event : str
             The name of the event that will be used for dispatching the event.
-        callback : typing.Callable, optional
+        callback : :class:`typing.Callable`, optional
             The callback that should be executed when the event was dispatched.
         recurring : bool, optional
             Whether or not the event should only be executed more than once. Defaults to True.
@@ -78,7 +78,7 @@ class EventEmitter:
         ----------
         event : str
             The name of the event where a callback should be removed.
-        callback : typing.Callable
+        callback : :class:`typing.Callable`
             The callback reference.
         """
 
@@ -120,7 +120,7 @@ class EventEmitter:
 
         Raises
         ------
-        EventError
+        :class:`EventError`
             Will be raised when an unregistered event was emitted.
         """
 
@@ -156,7 +156,7 @@ class EventEmitter:
 
         Raises
         ------
-        EventError
+        :class:`EventError`
             Will be raised when an unregistered event was emitted.
         """
 
@@ -177,7 +177,7 @@ class EventEmitter:
 
         Raises
         ------
-        trio.TooSlowError
+        :class:`trio.TooSlowError`
             Will be raised when the timeout was exceeded without any results.
         """
 

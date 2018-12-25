@@ -32,8 +32,8 @@ class _BaseChannel(Model):
 
     Attributes
     ----------
-    snowflake: shitcord.models.Snowflake
-        A `Snowflake` object that represents the model's ID.
+    snowflake: :class:`Snowflake`
+        A :class:`Snowflake` object that represents the model's ID.
     id : int
         The channel's ID.
     type : int
@@ -65,8 +65,8 @@ class PartialChannel(_BaseChannel, abc.Sendable):
 
     Attributes
     ----------
-    snowflake: shitcord.models.Snowflake
-        A `Snowflake` object that represents the model's ID.
+    snowflake: :class:`Snowflake`
+        A :class:`Snowflake` object that represents the model's ID.
     id : int, optional
         The channel's ID.
     type : int
@@ -92,8 +92,8 @@ class TextChannel(_BaseChannel, abc.GuildChannel, abc.Sendable):
 
     Attributes
     ----------
-    snowflake: shitcord.models.Snowflake
-        A `Snowflake` object that represents the model's ID.
+    snowflake: :class:`Snowflake`
+        A :class:`Snowflake` object that represents the model's ID.
     id : int
         The channel's ID.
     type : int
@@ -102,8 +102,8 @@ class TextChannel(_BaseChannel, abc.GuildChannel, abc.Sendable):
         The Guild ID for the corresponding Guild this channel belongs to.
     position: int
         The channel's position.
-    permission_overwrites : typing.List[PermissionOverwrite]
-        A list containing `PermissionOverwrite` objects for the channel.
+    permission_overwrites : List[:class:`PermissionOverwrite`]
+        A list containing :class:`PermissionOverwrite` objects for the channel.
     name : str
         The channel's name.
     topic : str, optional
@@ -116,7 +116,7 @@ class TextChannel(_BaseChannel, abc.GuildChannel, abc.Sendable):
         Amount of seconds that must be waited before a message can be sent to this channel.
     parent_id : int, optional
         The channel's parent ID if a parent exists.
-    last_pinned: datetime.datetime, optional
+    last_pinned: :class:`datetime.datetime`, optional
         A datetime representing when the last message in this channel was pinned.
     """
 
@@ -145,17 +145,17 @@ class DMChannel(_BaseChannel, abc.PrivateChannel, abc.Sendable):
 
     Attributes
     ----------
-    snowflake: shitcord.models.Snowflake
-        A `Snowflake` object that represents the model's ID.
+    snowflake: :class:`Snowflake`
+        A :class:`Snowflake` object that represents the model's ID.
     id : int
         The channel's ID.
     type : int
         An integer representing the channel's type. Should be 1.
     last_message_id : int, optional
         The ID of the last message that was sent into this channel.
-    recipients : typing.List[User]
-        A list of `User` objects that are permitted to interact with this channel.
-    last_pinned : datetime.datetime, optional
+    recipients : List[:class:`User`]
+        A list of :class:`User` objects that are permitted to interact with this channel.
+    last_pinned : :class:`datetime.datetime`, optional
         A datetime representing when the last message in this channel was pinned.
     """
 
@@ -175,12 +175,12 @@ class VoiceChannel(_BaseChannel, abc.Connectable, abc.GuildChannel):
 
     VoiceChannels are channels, Users can connect to and transmit audio.
     Audio usually must be encoded with the opus codec.
-    Like `TextChannel`, this channel type also always has a Guild it belongs to.
+    Like :class:`TextChannel`, this channel type also always has a Guild it belongs to.
 
     Attributes
     ----------
-    snowflake: shitcord.models.Snowflake
-        A `Snowflake` object that represents the model's ID.
+    snowflake: :class:`Snowflake`
+        A :class:`Snowflake` object that represents the model's ID.
     id : int
         The channel's ID.
     type : int
@@ -189,14 +189,14 @@ class VoiceChannel(_BaseChannel, abc.Connectable, abc.GuildChannel):
         The Guild ID for the corresponding Guild this channel belongs to.
     position: int
         The channel's position.
-    permission_overwrites : typing.List[PermissionOverwrite]
-        A list containing `PermissionOverwrite` objects for the channel.
+    permission_overwrites : List[:class:`PermissionOverwrite`]
+        A list containing :class:`PermissionOverwrite` objects for the channel.
     name : str
         The channel's name.
     bitrate : int
         The channel's bitrate.
     user_limit : int
-        The total amount of `User`s that can be connected to the channel at the same time.
+        The total amount of :class:`User`s that can be connected to the channel at the same time.
     parent_id : int, optional
         The channel's parent ID if a parent exists.
     """
@@ -224,8 +224,8 @@ class GroupDMChannel(_BaseChannel, abc.PrivateChannel, abc.Sendable):
 
     Attributes
     ----------
-    snowflake: shitcord.models.Snowflake
-        A `Snowflake` object that represents the model's ID.
+    snowflake: :class:`Snowflake`
+        A :class:`Snowflake` object that represents the model's ID.
     id : int
         The channel's ID.
     type : int
@@ -234,15 +234,15 @@ class GroupDMChannel(_BaseChannel, abc.PrivateChannel, abc.Sendable):
         The channel's name.
     last_message_id : int, optional
         The ID of the last message that was sent into this channel.
-    recipients : typing.List[User]
-        A list of `User` objects that are permitted to interact with this channel.
+    recipients : List[:class:`User`]
+        A list of :class:`User` objects that are permitted to interact with this channel.
     icon : str, optional
         The icon hash of the group.
     owner_id : int
-        The ID of the `User` that owns the group.
+        The ID of the :class:`User` that owns the group.
     application_id : int, optional
         The Application ID of the group's creator if it was created by a bot.
-    last_pinned : datetime.datetime, optional
+    last_pinned : :class:`datetime.datetime`, optional
         A datetime representing when the last message in this channel was pinned.
     """
 
@@ -270,8 +270,8 @@ class CategoryChannel(_BaseChannel, abc.GuildChannel):
 
     Attributes
     ----------
-    snowflake: shitcord.models.Snowflake
-        A `Snowflake` object that represents the model's ID.
+    snowflake: :class:`Snowflake`
+        A :class:`Snowflake` object that represents the model's ID.
     id : int
         The channel's ID.
     type : int
@@ -280,8 +280,8 @@ class CategoryChannel(_BaseChannel, abc.GuildChannel):
         The Guild ID for the corresponding Guild this channel belongs to.
     position: int
         The channel's position.
-    permission_overwrites : typing.List[PermissionOverwrite]
-        A list containing `PermissionOverwrite` objects for the channel.
+    permission_overwrites : List[:class:`PermissionOverwrite`]
+        A list containing :class:`PermissionOverwrite` objects for the channel.
     name : str
         The channel's name.
     nsfw : bool

@@ -8,6 +8,7 @@ class Colour:
     """Represents a Colour class that basically wraps around a color like an RGB tuple.
 
     This class is used for displaying the colors of models from the Discord API, e.g. Role or Embed.
+    There is an alias for this under :class:`Color`.
 
     Parameters
     ----------
@@ -63,7 +64,7 @@ class Colour:
 
     @classmethod
     def from_rgb(cls, r, g, b):
-        """Returns a new instance of `Colour` from given rgb values."""
+        """Returns a new instance of :class:`Colour` from given rgb values."""
 
         colour = (r << 16) + (g << 8) + b
 
@@ -71,7 +72,7 @@ class Colour:
 
     @classmethod
     def from_hsv(cls, h, s, v):
-        """Returns a new instance of `Colour` from given hsv values."""
+        """Returns a new instance of :class:`Colour` from given hsv values."""
 
         rgb_colour = colorsys.hsv_to_rgb(h, s, v)
 
@@ -79,85 +80,85 @@ class Colour:
 
     @classmethod
     def default(cls):
-        """A factory method that returns a new instance of `Colour` without any colour value."""
+        """A factory method that returns a new instance of :class:`Colour` without any colour value."""
 
         return cls(0)
 
     @classmethod
     def red(cls):
-        """A factory method that returns a new instance of `Colour` with '0xff0000' as the colour value."""
+        """A factory method that returns a new instance of :class:`Colour` with '0xff0000' as the colour value."""
 
         return cls(0xff0000)
 
     @classmethod
     def green(cls):
-        """A factory method that returns a new instance of `Colour` with '0x6eff00' as the colour value."""
+        """A factory method that returns a new instance of :class:`Colour` with '0x6eff00' as the colour value."""
 
         return cls(0x6eff00)
 
     @classmethod
     def blue(cls):
-        """A factory method that returns a new instance of `Colour` with '0x0000ff' as the colour value."""
+        """A factory method that returns a new instance of :class:`Colour` with '0x0000ff' as the colour value."""
 
         return cls(0x0000ff)
 
     @classmethod
     def yellow(cls):
-        """A factory method that returns a new instance of `Colour` with '0xffff00' as the colour value."""
+        """A factory method that returns a new instance of :class:`Colour` with '0xffff00' as the colour value."""
 
         return cls(0xffff00)
 
     @classmethod
     def orange(cls):
-        """A factory method that returns a new instance of `Colour` with '0xffa500' as the colour value."""
+        """A factory method that returns a new instance of :class:`Colour` with '0xffa500' as the colour value."""
 
         return cls(0xffa500)
 
     @classmethod
     def purple(cls):
-        """A factory method that returns a new instance of `Colour` with '0xd600ff' as the colour value."""
+        """A factory method that returns a new instance of :class:`Colour` with '0xd600ff' as the colour value."""
 
         return cls(0xd600ff)
 
     @classmethod
     def gold(cls):
-        """A factory method that returns a new instance of `Colour` with '0xffd700' as the colour value."""
+        """A factory method that returns a new instance of :class:`Colour` with '0xffd700' as the colour value."""
 
         return cls(0xffd700)
 
     @classmethod
     def silver(cls):
-        """A factory method that returns a new instance of `Colour` with '0xc0c0c0' as the colour value."""
+        """A factory method that returns a new instance of :class:`Colour` with '0xc0c0c0' as the colour value."""
 
         return cls(0xc0c0c0)
 
     @classmethod
     def clear(cls):
-        """A factory method that returns a new instance of `Colour` with '0x36393e' as the colour value."""
+        """A factory method that returns a new instance of :class:`Colour` with '0x36393e' as the colour value."""
 
         return cls(0x36393e)
 
     @classmethod
     def pink(cls):
-        """A factory method that returns a new instance of `Colour` with '0xffc0cb' as the colour value."""
+        """A factory method that returns a new instance of :class:`Colour` with '0xffc0cb' as the colour value."""
 
         return cls(0xffc0cb)
 
     @classmethod
     def blurple(cls):
-        """A factory method that returns a new instance of `Colour` with '0x7289da' as the colour value."""
+        """A factory method that returns a new instance of :class:`Colour` with '0x7289da' as the colour value."""
 
         return cls(0x7289da)
 
     @classmethod
     def greyple(cls):
-        """A factory method that returns a new instance of `Colour` with '0x99aab5' as the colour value."""
+        """A factory method that returns a new instance of :class:`Colour` with '0x99aab5' as the colour value."""
 
         return cls(0x99aab5)
 
     @classmethod
     def brown(cls):
-        """A factory method that returns a new instance of `Colour` with '0xa0522d' as the colour value."""
+        """A factory method that returns a new instance of :class:`Colour` with '0xa0522d' as the colour value."""
 
         return cls(0xa0522d)
 
@@ -165,24 +166,26 @@ class Colour:
 
     @classmethod
     def grey(cls):
-        """A factory method that returns a new instance of `Colour` with '0x808080' as the colour value."""
+        """A factory method that returns a new instance of :class:`Colour` with '0x808080' as the colour value."""
 
         return cls(0x808080)
 
     @classmethod
     def light_blue(cls):
-        """A factory method that returns a new instance of `Colour` with '0x00fff9' as the colour value."""
+        """A factory method that returns a new instance of :class:`Colour` with '0x00fff9' as the colour value."""
 
         return cls(0x00fff9)
 
     @classmethod
     def light_green(cls):
-        """A factory method that returns a new instance of `Colour` with '0x3cff00' as the colour value."""
+        """A factory method that returns a new instance of :class:`Colour` with '0x3cff00' as the colour value."""
 
         return cls(0x3cff00)
 
     @classmethod
     def random(cls):
+        """A factory method that returns a new instance of :class:`Colour` with a random colour value."""
+
         rgb_colour = colorsys.hsv_to_rgb(random(), 1, 1)
         values = [int(component * 255) for component in rgb_colour]
 

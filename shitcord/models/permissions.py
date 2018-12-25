@@ -148,12 +148,12 @@ class Permissions:
 
     @classmethod
     def text(cls):
-        """A factory method that returns a new `Permissions` instance with all text-based permissions granted."""
+        """A factory method that returns a new :class:`Permissions` instance with all text-based permissions granted."""
 
         return cls(523328)
 
     @classmethod
     def voice(cls):
-        """A factory method that returns a new `Permissions` instance with all voice-based permissions granted."""
+        """A factory method that returns a new :class:`Permissions` instance with all voice-based permissions granted."""
 
         return cls(66060544)

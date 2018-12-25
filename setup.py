@@ -13,7 +13,7 @@ with open('shitcord/__init__.py', 'r') as f:
 
 # No extra requirements at the moment ¯\_(ツ)_/¯
 extra_requires = {
-    'docs': ['sphinx==1.8.2', 'sphinx_rtd_theme>=0.4.2']
+    'docs': ['sphinx==1.8.2', 'sphinx_rtd_theme>=0.4.2', 'sphinx-autodoc-typehints']
 }
 
 setup(

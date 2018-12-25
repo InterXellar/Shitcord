@@ -13,8 +13,8 @@ class Role(Model):
 
     Attributes
     ----------
-    snowflake: shitcord.models.Snowflake
-        A `Snowflake` object that represents the role's ID.
+    snowflake: :class:`Snowflake`
+        A :class:`Snowflake` object that represents the role's ID.
     id : int
         The role's ID.
     name : str
@@ -23,8 +23,8 @@ class Role(Model):
         A boolean indicating whether the role is hoisted or not.
     position : int
         The role's position in the hierarchy.
-    permissions : shitcord.models.Permissions
-        A `Permission` object representing the permissions attached to the role.
+    permissions : :class:`Permissions`
+        A :class:`Permissions` object representing the permissions attached to the role.
     managed : bool
         Whether the role is managed or not.
     mentionable : bool

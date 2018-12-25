@@ -41,8 +41,8 @@ class _BaseUser(Model, abc.DiscordUser):
 
     Attributes
     ----------
-    snowflake : shitcord.models.Snowflake
-        A `Snowflake` object that represents the user's ID.
+    snowflake : :class:`Snowflake`
+        A :class:`Snowflake` object that represents the user's ID.
     id : int
         The user's ID.
     name : str
@@ -116,6 +116,35 @@ class _BaseUser(Model, abc.DiscordUser):
 
 
 class User(_BaseUser):
+    """Represents a User on Discord.
+
+    Users on Discord don't belong to guilds.
+    They are only in DM conversations.
+
+    Attributes
+    ----------
+    snowflake : :class:`Snowflake`
+        A :class:`Snowflake` object that represents the user's ID.
+    id : int
+        The user's ID.
+    name : str
+        The user's name.
+    avatar_hash : str
+        The hash of the user's avatar.
+    bot : bool, optional
+        A boolean indicating whether the user is a bot or not.
+    mfa_enabled: bool, optional
+        A boolean indicating whether the user has mfa enabled or not.
+    verified : bool, optional
+        A boolean indicating whether the user has verified his email address or not.
+    email : str, optional
+        The user's email address.
+    flags : int, optional
+        The user's account flags. None when permissions for accessing flags aren't granted.
+    permium_type : int, optional
+        The user's premium type as an integer. None when permissions for accessing the premium type aren't granted.
+    """
+
     def __init__(self, data, http):
         super().__init__(data, http)
 

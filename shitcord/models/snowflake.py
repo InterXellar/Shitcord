@@ -9,8 +9,8 @@ class Snowflake:
     """Represents a generic Snowflake class.
 
     As of the Discord API using Twitter's Snowflakes, there are many
-    data stored inside them. This class represents an interface that lets
-    you access and modify these Snowflake data.
+    data stored inside them. This special class wraps around such a Snowflake ID
+    and represents an interface that lets you access these data.
 
     Parameters
     ----------
@@ -21,7 +21,7 @@ class Snowflake:
     ----------
     binary : str
         A string representing the Snowflake's binary representation.
-    timestamp : datetime
+    timestamp : :class:`datetime.datetime`
         An offset-naive datetime object representing the Snowflake's creation time.
     worker_id : int
         The Worker ID that belongs to the Snowflake.

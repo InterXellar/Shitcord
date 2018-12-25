@@ -45,7 +45,21 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
+    'sphinx.ext.extlinks',
+    'sphinx_autodoc_typehints',
 ]
+
+autodoc_member_order = 'bysource'
+
+extlinks = {
+    'issue': ('https://github.com/itsVale/Shitcord/issues/%s', 'issue '),
+}
+
+rst_prolog = """
+.. |coro| replace:: This function is a |corourl|_.
+.. |corourl| replace:: *coroutine*
+.. _corourl: https://docs.python.org/3/library/asyncio-task.html#coroutine
+"""
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
