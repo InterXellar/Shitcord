@@ -158,3 +158,11 @@ Exceptions
 ----------
 
 The following exceptions are thrown by Shitcord.
+
+.. autoexception:: shitcord.http.ShitRequestFailed()
+
+.. autoexception:: shitcord.models.ModelError
+
+.. autoexception:: shitcord.models.InvalidPermission
+
+.. autoexception:: shitcord.models.MissingProfile

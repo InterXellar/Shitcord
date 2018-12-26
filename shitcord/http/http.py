@@ -59,7 +59,7 @@ class HTTP:
 
         Raises
         ------
-        ShitRequestFailed
+        :class:`ShitRequestFailed`
             Will be raised on request failure or when the total amount of possible retries was exceeded.
         """
 
