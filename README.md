@@ -7,7 +7,7 @@
     &nbsp;
     <a href="https://travis-ci.com/itsVale/Shitcord"><img src="https://travis-ci.com/itsVale/Shitcord.svg?branch=async" /></a>
     &nbsp;
-    <a href='https://shitcord.readthedocs.io/en/latest/?badge=async'><img src='https://readthedocs.org/projects/shitcord/badge/?version=async' alt='Documentation Status' /></a>
+    <a href='https://shitcord.readthedocs.io/en/async'><img src='https://readthedocs.org/projects/shitcord/badge/?version=async' alt='Documentation Status' /></a>
     &nbsp;
     <a href="https://GitHub.com/itsVale/Shitcord/issues/"><img src="https://img.shields.io/github/issues/itsVale/Shitcord.svg" /></a>
     &nbsp;
