@@ -1,12 +1,28 @@
-from .base import Model
 from .channel import PartialChannel
 
 
-class Invite(Model):
+class Invite:
+    """Represents a Guild Invite model from the Discord API.
+
+    Invites are always created by guild members to invite other users to the guild.
+
+    Attributes
+    ----------
+    code : str
+        A unique invite code.
+    guild : :class:`Guild`, optional
+        The guild that corresponds to the invite code.
+    channel : :class:`PartialChannel`
+        The channel this invite is for.
+    online_members : int, optional
+        Approximate count of online members.
+    total_members : int, optional
+        Approximate count of total members.
+    """
+
+    __slots__ = ('code', 'guild', 'channel', 'online_members', 'total_members')
 
     def __init__(self, data, http):
-        super().__init__(0, http=http)
-
         self.code = data['code']
         self.guild = data.get('guild')
         self.channel = PartialChannel(data['channel'], http=http)
