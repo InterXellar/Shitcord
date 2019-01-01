@@ -6,14 +6,6 @@ from functools import partial
 import multio
 import trio
 
-from .cls_wrapper import (
-    HTTP,
-    Limiter,
-    Endpoints
-)
-
-__all__ = ['HTTP', 'Limiter', 'Endpoints']
-
 
 class SyncExecution(threading.Thread):
     def __init__(self):
@@ -55,5 +47,13 @@ class SyncExecution(threading.Thread):
 
 _thread = SyncExecution()
 _thread.start()
+
+from .cls_wrapper import (  # noqa
+    HTTP,
+    Limiter,
+    Endpoints
+)
+
+__all__ = ['HTTP', 'Limiter', 'Endpoints']
 
 signal.signal(signal.SIGINT, signal.SIG_DFL)

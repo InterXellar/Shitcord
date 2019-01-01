@@ -67,19 +67,19 @@ class Limiter:
 
     async def __call__(self, bucket, response, parsed):
         resp = APIResponse(bucket, response, parsed)
-        await self._cooldown_task(resp)
+        async with trio.open_nursery() as nursery:
+            await nursery.start(self._cooldown_task, resp, nursery)
 
-    async def _cooldown_task(self, response):
+    async def _cooldown_task(self, response, nursery, *, task_status=trio.TASK_STATUS_IGNORED):
         duration, global_limit = self.get_cooldown(response)
 
-        # Ugly shit, but unfortunately no way to clean this up furthermore.
-        async with trio.open_nursery() as nursery:
-            nursery.start_soon(response.cooldown, duration)
+        nursery.start_soon(response.cooldown, duration)
+        task_status.started()
 
-            if global_limit:
-                with trio.move_on_after(duration):
-                    self.no_global_limit.clear()
-                self.no_global_limit.set()
+        if global_limit:
+            with trio.move_on_after(duration):
+                self.no_global_limit.clear()
+            self.no_global_limit.set()
 
     @staticmethod
     def get_cooldown(resp):
@@ -98,7 +98,7 @@ class Limiter:
                 logger.debug('Global rate limit has been exhausted.')
 
         else:
-            # We are neither rate-limited nor exhausted a rate limit bucket.
+            # We are neither rate-limited nor have we exhausted a rate limit bucket.
             duration = 0
 
         return duration, resp.global_limit
