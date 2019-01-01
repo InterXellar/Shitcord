@@ -6,7 +6,7 @@ from datetime import datetime
 from . import abc
 from .base import Model
 
-__all__ = ['_channel_from_payload', 'TextChannel', 'DMChannel', 'VoiceChannel', 'GroupDMChannel', 'CategoryChannel']
+__all__ = ['_channel_from_payload', 'PartialChannel', 'TextChannel', 'DMChannel', 'VoiceChannel', 'GroupDMChannel', 'CategoryChannel']
 
 
 def _channel_from_payload(payload, http):
