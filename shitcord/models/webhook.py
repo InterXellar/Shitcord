@@ -17,17 +17,17 @@ class Webhook(Model):
     id : int
         The webhook's ID.
     guild_id : int
-        the Guild ID this webhook is for.
+        The guild ID this webhook is for.
     channel_id : int
-        the channel id this webhook is for
+        The channel ID this webhook is for
     user : :class:`User`
-        the user this webhook was created by (not returned when getting a webhook with its token)
+        The user this webhook was created by (not returned when getting a webhook with its token)
     name : str
-        the default name of the webhook
+        The default name of the webhook
     avatar : str
-        the default avatar of the webhook
+        The default avatar of the webhook
     token : str
-        the secure token of the webhook
+        The secure token of the webhook
     """
 
     __slots__ = ('guild_id', 'channel_id', 'user', 'name', 'avatar', 'token')
