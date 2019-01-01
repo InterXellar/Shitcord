@@ -18,9 +18,9 @@ class Webhook(Model):
         The webhook's ID.
     guild_id : int
         The guild ID this webhook is for.
-    channel_id : int
+    channel_id : int, optional
         The channel ID this webhook is for.
-    user : :class:`User`
+    user : :class:`User`, optional
         The user this webhook was created by (not returned when getting a webhook with its token).
     name : str
         The default name of the webhook.
@@ -35,12 +35,15 @@ class Webhook(Model):
     def __init__(self, data, http):
         super().__init__(data['id'], http=http)
 
-        self.guild_id = data['guild_id']
+        self.guild_id = data.get('guild_id')
         self.channel_id = data['channel_id']
-        self.user = User(data['user'], self._http)
         self.name = data['name']
         self.avatar = data['avatar']
         self.token = data['token']
+
+        self.user = data.get('user')
+        if self.user:
+            self.user = User(self.user, self._http)
 
     def __str__(self):
         return self.name
