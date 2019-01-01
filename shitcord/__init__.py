@@ -17,8 +17,10 @@ import sys
 from collections import namedtuple
 
 from .http import *
+from .gateway import *
 from .models import *
 from .utils import *
+from .sync import *
 
 __title__ = 'Shitcord'
 __author__ = 'Valentin B.'
@@ -27,8 +29,8 @@ __license__ = 'GNU GPLv3'
 __copyright__ = '(c) 2018 Valentin B.'
 __url__ = 'https://github.com/itsVale/Shitcord'
 
-VersionInfo = namedtuple('VersionInfo', 'major minor micro releaselevel')
-version_info = VersionInfo(major=0, minor=0, micro=1, releaselevel='beta')
+VersionInfo = namedtuple('VersionInfo', 'major minor micro releaselevel serial')
+version_info = VersionInfo(major=0, minor=0, micro=2, releaselevel='beta', serial=0)
 
 fmt = '[%(levelname)s] %(asctime)s - %(name)s:%(lineno)d - %(message)s'
 logging.basicConfig(format=fmt, level=logging.INFO)

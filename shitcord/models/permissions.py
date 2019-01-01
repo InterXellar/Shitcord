@@ -64,10 +64,20 @@ def to_bitset(value: PossiblePermissionTypes) -> int:
 
 
 class Permissions:
-    value = 0
+    """A class that wraps around a permissions value from the Discord API.
+
+    Permissions are used to limit or grant certain abilities on a Guild to Members or Roles.
+
+    Attributes
+    ----------
+    value : int, optional
+        The permissions value.
+    """
+
+    __slots__ = ('value', )
 
     def __init__(self, perms: PossiblePermissionTypes = 0):
-        self.value = max(self.value, to_bitset(perms))
+        self.value = to_bitset(perms)
 
     def __repr__(self):
         return '<shitcord.Permissions value={}>'.format(self.value)
@@ -94,6 +104,8 @@ class Permissions:
             yield (permission.name, permission.value in self)
 
     def has(self, *permissions: ValidPermissionTypes) -> bool:
+        """Indicates whether some certain permissions are included in the permission value for this object."""
+
         for permission in permissions:
             if permission not in self:
                 break
@@ -104,12 +116,16 @@ class Permissions:
         return False
 
     def add(self, *permissions: ValidPermissionTypes):
+        """Adds a set of permissions to the current permission value of this object."""
+
         for permission in permissions:
             self.value |= to_bitset(permission)
 
         return self
 
     def sub(self, *permissions: ValidPermissionTypes):
+        """Removes a set of permissions from the current permission value of this object."""
+
         for permission in permissions:
             self.value &= ~to_bitset(permission)
 
@@ -132,8 +148,12 @@ class Permissions:
 
     @classmethod
     def text(cls):
+        """A factory method that returns a new :class:`Permissions` instance with all text-based permissions granted."""
+
         return cls(523328)
 
     @classmethod
     def voice(cls):
+        """A factory method that returns a new :class:`Permissions` instance with all voice-based permissions granted."""
+
         return cls(66060544)

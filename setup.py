@@ -11,8 +11,10 @@ with open('shitcord/__init__.py', 'r') as f:
     match = re.search(r'^__version__\s=\s\'(\d.\d.\d([ab])?)\'$', f.read(), re.MULTILINE)
     version = match.group(1)
 
-# No extra requirements at the moment ¯\_(ツ)_/¯
-extra_requires = {}
+extras_require = {
+    'docs': ['sphinx==1.8.2', 'sphinx_rtd_theme>=0.4.2', 'sphinx-autodoc-typehints'],
+    'performance': ['ujson>=0.35', 'earl-etf==2.1.2'],
+}
 
 setup(
     name='Shitcord',
@@ -27,7 +29,7 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     install_requires=requirements,
-    extra_requires=extra_requires,
+    extras_require=extras_require,
     classifiers=[
         'Development Status :: 4 - Beta',
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',

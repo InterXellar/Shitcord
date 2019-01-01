@@ -27,7 +27,7 @@ class Limiter:
 
         async def _release_lock():
             await trio.sleep(self.per)
-            await self._lock.release()
+            self._lock.release()
 
         async with trio.open_nursery() as nursery:
             nursery.start_soon(_release_lock)

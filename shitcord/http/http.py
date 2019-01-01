@@ -5,6 +5,7 @@ import shitcord
 import logging
 import sys
 from random import randint
+from urllib.parse import quote
 
 import trio
 import asks
@@ -59,7 +60,7 @@ class HTTP:
 
         Raises
         ------
-        ShitRequestFailed
+        :class:`ShitRequestFailed`
             Will be raised on request failure or when the total amount of possible retries was exceeded.
         """
 
@@ -68,14 +69,17 @@ class HTTP:
 
         # Prepare the headers
         if 'headers' in kwargs:
-            headers = kwargs['headers'].update(self.headers)
+            kwargs['headers'].update(self.headers)
         else:
-            headers = kwargs['headers'] = self.headers
+            kwargs['headers'] = self.headers
+
+        if 'reason' in kwargs:
+            kwargs['headers']['X-Audit-Log-Reason'] = quote(kwargs['reason'], '/ ')
 
         method = route[0].value
         endpoint = route[1].format(**fmt)
         bucket = (method, endpoint)
-        logger.debug('Performing request to bucket %s with headers %s', bucket, headers)
+        logger.debug('Performing request to bucket %s with headers %s', bucket, kwargs['headers'])
 
         # For the case of a global rate limit
         if not self.limiter.no_global_limit.is_set():
