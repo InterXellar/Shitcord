@@ -11,7 +11,7 @@ import trio_websocket
 from wsproto.frame_protocol import Opcode as WSOpcodes
 
 from .encoding import ENCODERS
-from .errors import NoMoreReconnects
+from .errors import GatewayException, NoMoreReconnects
 from .opcodes import Opcodes
 from .serialization import identify, resume
 from ..utils import gateway, event_emitter
@@ -281,8 +281,7 @@ class DiscordWebSocketClient:
         try:
             payload = self.encoder.decode(message)
         except Exception:
-            logger.debug('Failed to parse Gateway message: %s', message)
-            return
+            raise GatewayException('Failed to parse Gateway message: {}'.format(message))
 
         # Update the sequence if given because it is necessary for keeping the connection alive.
         if payload['s']:
