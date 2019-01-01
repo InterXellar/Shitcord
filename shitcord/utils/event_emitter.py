@@ -21,8 +21,7 @@ class EventEmitter:
     Every callback is executed by creating a background task.
     """
 
-    __callbacks = collections.defaultdict(list)
-    __lock = trio.Lock()
+    _callbacks = collections.defaultdict(list)
 
     def add_listener(self, event, callback: typing.Callable = None, *, recurring=True):
         """Registers a callback for the specified event.
@@ -45,8 +44,7 @@ class EventEmitter:
             if not inspect.iscoroutinefunction(callback):
                 raise EventError('Only coroutines are allowed for registration of callbacks.')
 
-            with self.__lock:
-                self.__callbacks[event].append(Event(func=callback, recurring=recurring))
+            self._callbacks[event].append(Event(func=callback, recurring=recurring))
             return
 
         # When used for decorating an event
@@ -54,8 +52,7 @@ class EventEmitter:
             if not inspect.iscoroutinefunction(callback):
                 raise EventError('Only coroutines are allowed for registration of callbacks.')
 
-            with self.__lock:
-                self.__callbacks[event].append(Event(func=callback, recurring=recurring))
+            self._callbacks[event].append(Event(func=callback, recurring=recurring))
             return callback
 
         return decorator
@@ -82,9 +79,8 @@ class EventEmitter:
             The callback reference.
         """
 
-        if event in self.__callbacks:
-            with self.__lock:
-                self.__callbacks[event] = [event for event in self.__callbacks[event] if event.func != callback]
+        if event in self._callbacks:
+            self._callbacks[event] = [event for event in self._callbacks[event] if event.func != callback]
 
     def remove_all_listeners(self, event=None):
         """Removes all registered callbacks.
@@ -100,12 +96,11 @@ class EventEmitter:
         """
 
         if not event:
-            self.__callbacks.clear()
-        elif event in self.__callbacks:
-            with self.__lock:
-                self.__callbacks.pop(event, None)
+            self._callbacks.clear()
+        elif event in self._callbacks:
+            self._callbacks.pop(event, None)
 
-    async def emit(self, event, *args):
+    async def emit(self, dispatch_event, *args, nursery=None):
         """Emits an event with some arguments.
 
         You can specify args that should be passed to the function.
@@ -113,10 +108,12 @@ class EventEmitter:
 
         Parameters
         ----------
-        event : str
+        dispatch_event : str
             The event that should be emitted.
         args
             Some arguments that should be passed to the event callback.
+        nursery : :class:`trio.Nursery`, optional
+            An already existing Nursery that should be used. If None, a new nursery will be created.
 
         Raises
         ------
@@ -124,20 +121,18 @@ class EventEmitter:
             Will be raised when an unregistered event was emitted.
         """
 
-        with self.__lock:
-            new_events = []
-            for event in self.__callbacks.pop(event, []):
-                if not inspect.iscoroutinefunction(event.func):
-                    raise EventError('Only coroutines are allowed for event emitting.')
+        for event in self._callbacks.get(dispatch_event, []):
+            if not inspect.iscoroutinefunction(event.func):
+                raise EventError('Only coroutines are allowed for event emitting.')
 
-                if event.recurring:
-                    new_events.append(event)
+            if not event.recurring:
+                self._callbacks[dispatch_event].remove(event)
 
+            if not nursery:
                 async with trio.open_nursery() as nursery:
                     nursery.start_soon(event.func, *args)
-
-            if new_events:
-                self.__callbacks[event] = new_events
+            else:
+                nursery.start_soon(event.func, *args)
 
     async def emit_after(self, delay, event, *args):
         """Emits an event with some arguments after a given amount of time.
