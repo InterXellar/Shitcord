@@ -35,9 +35,9 @@ class Webhook(Model):
     def __init__(self, data, http):
         super().__init__(data['id'], http=http)
 
-        self.guild_id = data['guild_id']
+        self.guild_id = data.get('guild_id')
         self.channel_id = data['channel_id']
-        self.user = User(data['user'], self._http)
+        self.user = User(data.get('user'), self._http)
         self.name = data['name']
         self.avatar = data['avatar']
         self.token = data['token']
