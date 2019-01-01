@@ -11,7 +11,7 @@ import trio_websocket
 from wsproto.frame_protocol import Opcode as WSOpcodes
 
 from .encoding import ENCODERS
-from .errors import NoMoreReconnects
+from .errors import GatewayException, NoMoreReconnects
 from .opcodes import Opcodes
 from .serialization import identify, resume
 from ..utils import gateway, event_emitter
@@ -21,13 +21,71 @@ none_func = lambda *a, **kw: None
 
 
 class DiscordWebSocketClient:
+    """Implements a WebSocket client for the Discord Gateway v6.
+
+    .. note:: This class should always be initialized via :meth:`from_client`.
+
+    .. warning:: As a library user you should never create an instance of this class manually.
+
+    Parameters
+    ----------
+    url : str
+        The WebSocket URL received from the `Get Gateway Bot` endpoint.
+    shard : int
+        The amount of recommended shards, received from the `Get Gateway Bot` endpoint.
+    session_start_limit : dict
+        The session start limit for this bot, received from the `Get Gateway Bot` endpoint.
+    max_reconnects : int
+        A keyword argument, describing how often a bot is allowed to reconnect. Defaults to 5.
+    encoding : str
+        The encoding of the Gateway payloads. Either `'json'` or `'etf'`.
+    zlib_compressed : bool
+        Whether Gateway payloads should be compressed or not. Defaults to True.
+
+    Attributes
+    ----------
+    VERSION : int
+        A constant defining the Gateway version. This should always be 6.
+    ZLIB_SUFFIX : bytes
+        A constant defining the zlib suffix that will be used for detecting zlib-compressed payloads.
+    TEN_MEGABYTES : int
+        The initial size of the output buffer for zlib decompression should always be 10 mb.
+
+    max_reconnects : int
+        The total amount of allowed reconnects after the connection was closed.
+    encoder : :class:`BaseEncoder`
+        Represents an encoder and decoder for Gateway payloads. Either :class:`ETFEncoder` or :class:`JSONEncoder`.
+    zlib_compressed : bool
+        Whether payloads from the Discord Gateway should be compressed or not.
+    session_start_limit : dict
+        The session start limit sent by the Discord Gateway.
+    session_id : str
+        The ID for the current session.
+    sequence : int
+        The sequence that will be used for heartbeating and resuming connections.
+    reconnects : int
+        Indicates how many reconnects were already made.
+    shutting_down : :class:`trio.Event`
+        An event that will be used to close the Gateway connection.
+    do_reconnect : bool
+        A boolean indicating whether the client should reconnect.
+    interval : int
+        The interval after which the client should send heartbeats.
+    limiter : :class:`shitcord.utils.Limiter`
+        A rate limiter for the Discord Gateway.
+    emitter : :class:`EventEmitter`
+        An event emitter for emitting received gateway events.
+    token : str
+        The bot's token.
+    """
+
     VERSION = 6
     ZLIB_SUFFIX = b'\x00\x00\xff\xff'
     TEN_MEGABYTES = 10490000
 
     def __init__(self, *args, **kwargs):
         self.max_reconnects = kwargs.get('max_reconnects', 5)
-        self.encoder = ENCODERS[kwargs.get('encoder', 'json')]
+        self.encoder = ENCODERS[kwargs.get('encoding', 'json')]
         self.zlib_compressed = kwargs.get('zlib_compressed', True)
         self._con = None
 
@@ -75,7 +133,7 @@ class DiscordWebSocketClient:
 
         return cls(*gateway_data, **client.config)
 
-    def format_url(self, url):
+    def format_url(self, url: str):
         url += '?version={version}&encoding={encoding}'
         if self.zlib_compressed:
             url += '&compress=zlib-stream'
@@ -90,6 +148,18 @@ class DiscordWebSocketClient:
         }))
 
     async def send(self, opcode: typing.Union[Opcodes, int], payload: typing.Union[dict, int, None]):
+        """|coro|
+
+        Sends a message to the Discord gateway and handles the rate limit.
+
+        Parameters
+        ----------
+        opcode
+            The opcode that should be sent.
+        payload
+            The payload that should be sent.
+        """
+
         await self.limiter.check()
         await self._send(opcode, payload)
 
@@ -172,7 +242,15 @@ class DiscordWebSocketClient:
         return message
 
     async def on_open(self):
-        """Identifying/Resuming"""
+        """|coro|
+
+        Will be called once the WebSocket connection was established.
+
+        .. warning:: This should never only be called internally by the client.
+
+        From here, an identify/resume payload will be sent to establish a real "connection"
+        to the Discord Gateway.
+        """
 
         session_id, sequence = self.session_id, self.sequence
         if session_id and sequence:
@@ -186,6 +264,14 @@ class DiscordWebSocketClient:
             await self._send(Opcodes.IDENTIFY, identify(self.token, shard=shard))
 
     async def on_message(self, message):
+        """|coro|
+
+        Will be called when a received gateway message was successfully polled from the queue.
+        This decompresses and decodes a payload and emits the corresponding opcode event.
+
+        .. warning:: This should never only be called internally by the client.
+        """
+
         logger.debug('Received message: %s', message)
 
         message = self.decompress(message)
@@ -195,8 +281,7 @@ class DiscordWebSocketClient:
         try:
             payload = self.encoder.decode(message)
         except Exception:
-            logger.debug('Failed to parse Gateway message: %s', message)
-            return
+            raise GatewayException('Failed to parse Gateway message: {}'.format(message))
 
         # Update the sequence if given because it is necessary for keeping the connection alive.
         if payload['s']:
@@ -215,12 +300,20 @@ class DiscordWebSocketClient:
         await self.emitter.emit(opcode.name, data)
 
     async def on_close(self, code, reason=None):
+        """|coro|
+
+        Will be called once the WebSocket connection was closed.
+
+        .. warning:: This should never only be called internally by the client.
+        """
+
         logger.debug('Connection was closed with code %s: %s', code, reason)
 
         # Clean up any old data
         self._buffer = bytearray()
         self._inflator = zlib.decompressobj()
         self.shutting_down.clear()
+        self._con = None
 
         if not self.do_reconnect:
             await self._con.aclose(1000)
@@ -242,6 +335,8 @@ class DiscordWebSocketClient:
         await self._start()
 
     async def connect(self, nursery):
+        """Opens a WebSocket connection to the Discord Gateway."""
+
         # Handling the session start limit from the Gateway.
         if self.session_start_limit['remaining'] <= 0:
             duration = self.session_start_limit['reset_after'] / 1000
@@ -267,6 +362,8 @@ class DiscordWebSocketClient:
             nursery.start_soon(self.__heartbeat_task)
 
     async def close(self):
+        """Closes the Gateway connection."""
+
         logger.debug('Shutting down the Gateway client.')
         self.do_reconnect = False
         await self._close(1000)
@@ -276,4 +373,6 @@ class DiscordWebSocketClient:
         self.shutting_down.set()
 
     def start(self):
+        """Starts the client."""
+
         trio.run(self._start)
