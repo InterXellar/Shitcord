@@ -17,9 +17,10 @@ import sys
 from collections import namedtuple
 
 from .http import *
+from .gateway import *
 from .models import *
 from .utils import *
-from . import sync
+from .sync import *
 
 __title__ = 'Shitcord'
 __author__ = 'Valentin B.'
