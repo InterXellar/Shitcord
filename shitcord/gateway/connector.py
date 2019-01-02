@@ -3,6 +3,7 @@
 import functools
 import logging
 import ssl
+import time
 import typing
 import zlib
 
@@ -69,6 +70,8 @@ class DiscordWebSocketClient:
         An event that will be used to close the Gateway connection.
     do_reconnect : bool
         A boolean indicating whether the client should reconnect.
+    latency : float
+        The WebSocket latency between sent Heartbeats and received HEARTBEAT_ACKs in microseconds.
     interval : int
         The interval after which the client should send heartbeats.
     limiter : :class:`shitcord.utils.Limiter`
@@ -101,6 +104,9 @@ class DiscordWebSocketClient:
         self.reconnects = 0
         self.shutting_down = trio.Event()
         self.do_reconnect = True
+        self._last_sent = time.perf_counter()
+        self._last_ack = time.perf_counter()
+        self.latency = float('inf')
 
         # Heartbeating stuff
         self.interval = 0
@@ -175,6 +181,7 @@ class DiscordWebSocketClient:
 
             logger.debug('Sending Heartbeat with Sequence: %s.', self.sequence)
             await self._send(Opcodes.HEARTBEAT, self.sequence)
+            self._last_sent = time.perf_counter()
             self._heartbeat_ack = False
             await trio.sleep(self.interval / 1000)
 
@@ -205,6 +212,9 @@ class DiscordWebSocketClient:
         await self._send_heartbeat.send('Heartbeat!')
 
     async def _handle_heartbeat_ack(self, _):
+        ack_time = time.perf_counter()
+        self._last_ack = ack_time
+        self.latency = ack_time - self._last_sent
         logger.debug('Received HEARTBEAT_ACK.')
         self._heartbeat_ack = True
 
