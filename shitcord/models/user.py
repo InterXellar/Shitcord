@@ -223,3 +223,28 @@ class User(_BaseUser):
         if len(houses) == 1:
             return houses[0]
         return houses
+
+
+class Connection:
+    """Represents a connection object every user has attached.
+
+    Attributes
+    ----------
+    id : str
+        The ID of the connection account.
+    name : str
+        The username of the connection account.
+    type : str
+        The service of the connection.
+    revoked : bool
+        Whether the connection is revoked or not.
+    integrations : list
+        A list of :class:`Integration` objects
+    """
+
+    def __init__(self, data):
+        self.id = data['id']
+        self.name = data['name']
+        self.type = data['type']
+        self.revoked = data['revoked']
+        self.integrations = data['integrations']
