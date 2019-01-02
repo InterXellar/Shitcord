@@ -246,10 +246,9 @@ class DiscordWebSocketClient:
 
         Will be called once the WebSocket connection was established.
 
-        .. warning:: This should never only be called internally by the client.
+        .. warning:: This should only be called internally by the client.
 
-        From here, an identify/resume payload will be sent to establish a real "connection"
-        to the Discord Gateway.
+        From here, an identify/resume payload will be sent to establish a real "connection" to the Discord Gateway.
         """
 
         session_id, sequence = self.session_id, self.sequence
@@ -269,7 +268,7 @@ class DiscordWebSocketClient:
         Will be called when a received gateway message was successfully polled from the queue.
         This decompresses and decodes a payload and emits the corresponding opcode event.
 
-        .. warning:: This should never only be called internally by the client.
+        .. warning:: This should only be called internally by the client.
         """
 
         logger.debug('Received message: %s', message)
@@ -303,8 +302,9 @@ class DiscordWebSocketClient:
         """|coro|
 
         Will be called once the WebSocket connection was closed.
+        Cleans up any old data and handles reconnecting.
 
-        .. warning:: This should never only be called internally by the client.
+        .. warning:: This should only be called internally by the client.
         """
 
         logger.debug('Connection was closed with code %s: %s', code, reason)
