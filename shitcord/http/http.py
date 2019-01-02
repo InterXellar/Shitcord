@@ -73,7 +73,7 @@ class HTTP:
         else:
             kwargs['headers'] = self.headers
 
-        if 'reason' in kwargs:
+        if kwargs.get('reason'):
             kwargs['headers']['X-Audit-Log-Reason'] = quote(kwargs['reason'], '/ ')
 
         method = route[0].value
