@@ -24,6 +24,12 @@ none_func = lambda *a, **kw: None
 class DiscordWebSocketClient:
     """Implements a WebSocket client for the Discord Gateway v6.
 
+    WebSockets will be used to establish a connection to the Discord Gateway.
+    It is a way of real-time communication between Discord and your bot, so mostly the connection
+    will be used for receiving events e.g. indicating when somebody sent a message.
+
+    The Gateway lifecycle is quite complex and demanding. For more details, see: https://s.gus.host/flowchart.svg
+
     .. note:: This class should always be initialized via :meth:`from_client`.
 
     .. warning:: As a library user you should never create an instance of this class manually.
@@ -39,9 +45,9 @@ class DiscordWebSocketClient:
     max_reconnects : int
         A keyword argument, describing how often a bot is allowed to reconnect. Defaults to 5.
     encoding : str
-        The encoding of the Gateway payloads. Either `'json'` or `'etf'`.
+        A keyword argument denoting the encoding of the Gateway payloads. Either `'json'` or `'etf'`.
     zlib_compressed : bool
-        Whether Gateway payloads should be compressed or not. Defaults to True.
+        A keyword argument to indicate whether Gateway payloads should be compressed or not. Defaults to `True`.
 
     Attributes
     ----------
@@ -50,7 +56,7 @@ class DiscordWebSocketClient:
     ZLIB_SUFFIX : bytes
         A constant defining the zlib suffix that will be used for detecting zlib-compressed payloads.
     TEN_MEGABYTES : int
-        The initial size of the output buffer for zlib decompression should always be 10 mb.
+        A constant defining the initial size of the output buffer for zlib decompression should always be 10 mb.
 
     max_reconnects : int
         The total amount of allowed reconnects after the connection was closed.
@@ -327,7 +333,6 @@ class DiscordWebSocketClient:
         self._con = None
 
         if not self.do_reconnect:
-            await self._con.aclose(1000)
             return
 
         self.reconnects += 1
