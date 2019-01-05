@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
 
 from .base import Model
+from .role import Role
+from .emoji import Emoji
+from .member import Member
+from .channel import _channel_from_payload
+from .channel import _get_as_datetime
 
 
 class Guild(Model):
@@ -79,7 +84,7 @@ class Guild(Model):
 
     __slots__ = ('name', 'icon', 'splash', 'owner', 'owner_id', 'permissions', 'region', 'afk_channel_id', 'afk_timeout', 'embed_enabled',
                  'embed_channel_id', 'verification_level', 'default_message_notifications', 'explicit_content_filter', 'role', 'emojis', 'features',
-                 'mfa_level', 'application_id', 'widget_enabled', 'widget_channel_id', 'system_channel_id', 'joined_at', 'large'
+                 'mfa_level', 'application_id', 'widget_enabled', 'widget_channel_id', 'system_channel_id', 'joined_at', 'large',
                  'unavailable', 'member_count', 'voice_states', 'members', 'channels', 'presences')
 
     def __init__(self, data, http):
@@ -91,3 +96,64 @@ class Guild(Model):
         self.owner = data.get('owner')
         self.owner_id = data['owner.id']
         self.permissions = data.get('permissions')
+        self.region = data['region']
+        self.afk_channel_id = data['afk_channel_id']
+        self.afk_timeout = data['afk_timeout']
+        self.embed_enabled = data.get('embed_enabled')
+        self.embed_channel_id = data.get('embed_channel_id')
+        self.verification_level = data['verification_level']
+        self.default_message_notifications = data['default_message_notifications']
+        self.explicit_content_filter = data['explicit_content_filter']
+        self.roles = [Role(role, http) for role in data['roles']]
+        self.emojis = [Emoji(emoji, http) for emoji in data['emojis']]
+        self.features = data['features']
+        self.mfa_level = data['mfa_level']
+        self.application_id = data['application_id']
+        self.widget_enabled = data.get('widget_enabled')
+        self.widget_channel_id = data.get('widget_channel_id')
+        self.system_channel_id = data['system_channel_id']
+        self.joined_at = _get_as_datetime(data, 'joined_at')
+        self.large = data.get('large')
+        self.unavailable = data.get('unavailable')
+        self.member_count = data.get('member_count')
+        self.voice_states = 'FILL ME IN LATER'
+        self.presences = 'FILL ME IN LATER'
+
+        self.members = data.get('members')
+        if self.members:
+            self.members = [Member(member, http) for member in self.members]
+
+        self.channels = data.get('channels')
+        if self.channels:
+            self.channels = [_channel_from_payload(channel, http) for channel in self.channels]
+
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return '<shitcord.Guild id={0.id} name={0.name}>'.format(self)
+
+
+class PartialGuild(Model):
+    """Represents a Partial Guild Model from the Discord API
+
+    Represents an Offline Guild,
+    or a Guild whose information has not been provided through Guild Create events during the Gateway connect.
+
+    Attributes
+    ----------
+    snowflake: :class:`Snowflake`
+        A :class:`Snowflake` object that represents the guild's ID.
+    unavailable : bool
+        Whether this guild is available or not.
+    """
+
+    __slots__ = 'unavailable'
+
+    def __init__(self, data, http):
+        super().__init__(data['id'], http=http)
+
+        self.unavailable = data['unavailable']
+
+    def __repr__(self):
+        return '<shitcord.PartialGuild id={}>'.format(self.id)
