@@ -194,6 +194,7 @@ class DiscordWebSocketClient:
     async def _handle_heartbeat(self, _):
         logger.debug('Heartbeat requested by the Discord Gateway.')
         await self._send(Opcodes.HEARTBEAT, self.sequence)
+        self._last_sent = time.perf_counter()
 
     async def _handle_reconnect(self, _):
         logger.debug('Received Opcode 7: RECONNECT. Forcing a reconnect.')
