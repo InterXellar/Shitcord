@@ -148,7 +148,7 @@ class PartialGuild(Model):
         Whether this guild is available or not.
     """
 
-    __slots__ = 'unavailable'
+    __slots__ = ('unavailable')
 
     def __init__(self, data, http):
         super().__init__(data['id'], http=http)
