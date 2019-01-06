@@ -4,6 +4,7 @@ from .base import Model
 from .role import Role
 from .emoji import Emoji
 from .member import Member
+from .voice import VoiceState
 from .channel import _channel_from_payload
 from .channel import _get_as_datetime
 
@@ -116,7 +117,6 @@ class Guild(Model):
         self.large = data.get('large')
         self.unavailable = data.get('unavailable')
         self.member_count = data.get('member_count')
-        self.voice_states = 'FILL ME IN LATER'
         self.presences = 'FILL ME IN LATER'
 
         self.members = data.get('members')
@@ -126,6 +126,10 @@ class Guild(Model):
         self.channels = data.get('channels')
         if self.channels:
             self.channels = [_channel_from_payload(channel, http) for channel in self.channels]
+
+        self.voice_states = data.get('voice_states')
+        if self.voice_states:
+            self.voice_states = [VoiceState(voice_state, http) for voice_state in self.voice_states]
 
     def __str__(self):
         return self.name
