@@ -5,6 +5,7 @@ from .role import Role
 from .emoji import Emoji
 from .member import Member
 from .voice import VoiceState
+from .gateway import Presence
 from .channel import _channel_from_payload
 from .channel import _get_as_datetime
 
@@ -73,13 +74,13 @@ class Guild(Model):
         Whether this guild is unavailable or not.
     member_count : int, optional
         Total number of members in that guild.
-    voice_states : list[], optional
+    voice_states : list[:class:`VoiceState`], optional
         List of voice states objects of the guild.
     members : list[:class:`Member`], optional
         Members of the guild.
     channels : list[:class:`Channel`], optional
         The channels of the guild.
-    presences : list[], optional
+    presences : list[:class:`Presence`], optional
         Presences of the users in the guild.
     """
 
@@ -117,7 +118,6 @@ class Guild(Model):
         self.large = data.get('large')
         self.unavailable = data.get('unavailable')
         self.member_count = data.get('member_count')
-        self.presences = 'FILL ME IN LATER'
 
         self.members = data.get('members')
         if self.members:
@@ -130,6 +130,10 @@ class Guild(Model):
         self.voice_states = data.get('voice_states')
         if self.voice_states:
             self.voice_states = [VoiceState(voice_state, http) for voice_state in self.voice_states]
+
+        self.presences = data.get('presences')
+        if self.presences:
+            self.presences = [Presence(presence, http) for presence in self.presences]
 
     def __str__(self):
         return self.name
