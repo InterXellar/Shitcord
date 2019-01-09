@@ -6,7 +6,9 @@ import ssl
 import time
 import typing
 import zlib
+from contextlib import contextmanager
 
+import contextvars
 import trio
 import trio_websocket
 from wsproto.frame_protocol import Opcode as WSOpcodes
@@ -114,6 +116,10 @@ class DiscordWebSocketClient:
         self._last_ack = time.perf_counter()
         self.latency = float('inf')
 
+        # For caching all sent and received WebSocket messages.
+        self._received_messages = contextvars.ContextVar('_received_messages', default=[])
+        self._sent_messages = contextvars.ContextVar('_sent_messages', default=[])
+
         # Heartbeating stuff
         self.interval = 0
         self._heartbeat_ack = True
@@ -152,12 +158,43 @@ class DiscordWebSocketClient:
 
         return url.format(version=self.VERSION, encoding=self.encoder.TYPE)
 
+    @contextmanager
+    def received_messages(self):
+        """A contextmanager that yields all messages that were received from the Discord Gateway.
+
+        PLEASE DO ONLY USE THIS IF YOU KNOW WHAT YOU ARE DOING!
+        """
+
+        messages = self._received_messages.get()
+
+        try:
+            yield messages
+        finally:
+            self._received_messages.set([])
+
+    @contextmanager
+    def sent_messages(self):
+        """A contextmanager that yields all messages that were sent to the Discord Gateway.
+
+        PLEASE DO ONLY USE THIS IF YOU KNOW WHAT YOU ARE DOING!
+        """
+
+        messages = self._sent_messages.get()
+
+        try:
+            yield messages
+        finally:
+            self._sent_messages.set([])
+
     async def _send(self, opcode, payload):
         logger.debug('Sending %s', payload)
-        await self._con.send_message(self.encoder.encode({
+        message = {
             'op': opcode.value if isinstance(opcode, Opcodes) else opcode,
             'd': payload,
-        }))
+        }
+
+        self._sent_messages.get().append(message)
+        await self._con.send_message(self.encoder.encode(message))
 
     async def send(self, opcode: typing.Union[Opcodes, int], payload: typing.Union[dict, int, None]):
         """|coro|
@@ -298,6 +335,9 @@ class DiscordWebSocketClient:
             payload = self.encoder.decode(message)
         except Exception:
             raise GatewayException('Failed to parse Gateway message: {}'.format(message))
+
+        # Cache the received message in JSON format.
+        self._received_messages.get().append(payload)
 
         # Update the sequence if given because it is necessary for keeping the connection alive.
         if payload['s']:
