@@ -13,13 +13,13 @@ class Role(Model):
 
     Attributes
     ----------
-    snowflake: :class:`Snowflake`
+    snowflake : :class:`Snowflake`
         A :class:`Snowflake` object that represents the role's ID.
     id : int
         The role's ID.
     name : str
         The role's name.
-    hoist: bool
+    hoist : bool
         A boolean indicating whether the role is hoisted or not.
     position : int
         The role's position in the hierarchy.

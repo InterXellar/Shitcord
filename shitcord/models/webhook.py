@@ -12,7 +12,7 @@ class Webhook(Model):
 
     Attributes
     ----------
-    snowflake: :class:`Snowflake`
+    snowflake : :class:`Snowflake`
         A :class:`Snowflake` object that represents the webhooks's ID.
     id : int
         The webhook's ID.

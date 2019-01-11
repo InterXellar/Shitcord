@@ -10,7 +10,7 @@ from .member import Member
 from .permissions import Permissions, PermissionTypes
 from .role import Role
 from .snowflake import DISCORD_EPOCH, Snowflake
-from .user import Connection, User
+from .user import *
 from .webhook import Webhook
 
 __all__ = ['Color', 'Colour', 'Connection', 'DISCORD_EPOCH', 'Emoji', 'Invite', 'Member',

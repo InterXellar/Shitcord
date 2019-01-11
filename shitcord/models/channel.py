@@ -32,7 +32,7 @@ class _BaseChannel(Model):
 
     Attributes
     ----------
-    snowflake: :class:`Snowflake`
+    snowflake : Snowflake
         A :class:`Snowflake` object that represents the model's ID.
     id : int
         The channel's ID.
@@ -65,7 +65,7 @@ class PartialChannel(_BaseChannel, abc.Sendable):
 
     Attributes
     ----------
-    snowflake: :class:`Snowflake`
+    snowflake : :class:`Snowflake`
         A :class:`Snowflake` object that represents the model's ID.
     id : int, optional
         The channel's ID.
@@ -92,7 +92,7 @@ class TextChannel(_BaseChannel, abc.GuildChannel, abc.Sendable):
 
     Attributes
     ----------
-    snowflake: :class:`Snowflake`
+    snowflake : :class:`Snowflake`
         A :class:`Snowflake` object that represents the model's ID.
     id : int
         The channel's ID.
@@ -100,7 +100,7 @@ class TextChannel(_BaseChannel, abc.GuildChannel, abc.Sendable):
         An integer representing the channel's type. Should be 0.
     guild_id : int
         The Guild ID for the corresponding Guild this channel belongs to.
-    position: int
+    position : int
         The channel's position.
     permission_overwrites : List[:class:`PermissionOverwrite`]
         A list containing :class:`PermissionOverwrite` objects for the channel.
@@ -116,7 +116,7 @@ class TextChannel(_BaseChannel, abc.GuildChannel, abc.Sendable):
         Amount of seconds that must be waited before a message can be sent to this channel.
     parent_id : int, optional
         The channel's parent ID if a parent exists.
-    last_pinned: :class:`datetime.datetime`, optional
+    last_pinned : :class:`datetime.datetime`, optional
         A datetime representing when the last message in this channel was pinned.
     """
 
@@ -145,7 +145,7 @@ class DMChannel(_BaseChannel, abc.PrivateChannel, abc.Sendable):
 
     Attributes
     ----------
-    snowflake: :class:`Snowflake`
+    snowflake : :class:`Snowflake`
         A :class:`Snowflake` object that represents the model's ID.
     id : int
         The channel's ID.
@@ -179,7 +179,7 @@ class VoiceChannel(_BaseChannel, abc.Connectable, abc.GuildChannel):
 
     Attributes
     ----------
-    snowflake: :class:`Snowflake`
+    snowflake : :class:`Snowflake`
         A :class:`Snowflake` object that represents the model's ID.
     id : int
         The channel's ID.
@@ -187,7 +187,7 @@ class VoiceChannel(_BaseChannel, abc.Connectable, abc.GuildChannel):
         An integer representing the channel's type. Should be 2.
     guild_id : int
         The Guild ID for the corresponding Guild this channel belongs to.
-    position: int
+    position : int
         The channel's position.
     permission_overwrites : List[:class:`PermissionOverwrite`]
         A list containing :class:`PermissionOverwrite` objects for the channel.
@@ -224,7 +224,7 @@ class GroupDMChannel(_BaseChannel, abc.PrivateChannel, abc.Sendable):
 
     Attributes
     ----------
-    snowflake: :class:`Snowflake`
+    snowflake : :class:`Snowflake`
         A :class:`Snowflake` object that represents the model's ID.
     id : int
         The channel's ID.
@@ -270,7 +270,7 @@ class CategoryChannel(_BaseChannel, abc.GuildChannel):
 
     Attributes
     ----------
-    snowflake: :class:`Snowflake`
+    snowflake : :class:`Snowflake`
         A :class:`Snowflake` object that represents the model's ID.
     id : int
         The channel's ID.
@@ -278,7 +278,7 @@ class CategoryChannel(_BaseChannel, abc.GuildChannel):
         An integer representing the channel's type. Should be 0.
     guild_id : int
         The Guild ID for the corresponding Guild this channel belongs to.
-    position: int
+    position : int
         The channel's position.
     permission_overwrites : List[:class:`PermissionOverwrite`]
         A list containing :class:`PermissionOverwrite` objects for the channel.
@@ -305,16 +305,16 @@ class CategoryChannel(_BaseChannel, abc.GuildChannel):
 
 
 class IntChannelTypes(enum.IntEnum):
-    GUILD_TEXT     = 0
-    DM             = 1
-    GUILD_VOICE    = 2
-    GROUP_DM       = 3
-    GUILD_CATEGORY = 4
+    GUILD_TEXT     = 0  # noqa
+    DM             = 1  # noqa
+    GUILD_VOICE    = 2  # noqa
+    GROUP_DM       = 3  # noqa
+    GUILD_CATEGORY = 4  # noqa
 
 
 class _ChannelTypes(enum.Enum):
-    GUILD_TEXT     = TextChannel
-    DM             = DMChannel
-    GUILD_VOICE    = VoiceChannel
-    GROUP_DM       = GroupDMChannel
-    GUILD_CATEGORY = CategoryChannel
+    GUILD_TEXT     = TextChannel  # noqa
+    DM             = DMChannel  # noqa
+    GUILD_VOICE    = VoiceChannel  # noqa
+    GROUP_DM       = GroupDMChannel  # noqa
+    GUILD_CATEGORY = CategoryChannel  # noqa

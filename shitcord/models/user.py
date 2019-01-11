@@ -7,31 +7,31 @@ from .base import Model
 from .errors import MissingProfile
 from ..utils import cdn
 
-__all__ = ['User']
+__all__ = ['Connection', 'User']
 
 
 class RelationshipType(enum.IntEnum):
-    FRIEND           = 1
-    BLOCKED          = 2
-    INCOMING_REQUEST = 3
-    OUTGOING_REQUEST = 4
+    FRIEND           = 1  # noqa
+    BLOCKED          = 2  # noqa
+    INCOMING_REQUEST = 3  # noqa
+    OUTGOING_REQUEST = 4  # noqa
 
 
 class HypeSquadHouse(enum.IntEnum):
-    BRAVERY    = 1
-    BRILLIANCE = 2
-    BALANCE    = 3
+    BRAVERY    = 1  # noqa
+    BRILLIANCE = 2  # noqa
+    BALANCE    = 3  # noqa
 
 
 class Flags(enum.IntEnum):
-    DISCORD_EMPLOYEE     = 1
-    DISCORD_PARTNER      = 2
-    DISCORD_HYPESQUAD    = 4
-    DISCORD_BUG_HUNTER   = 8
-    HYPESQUAD_BRAVERY    = 64
-    HYPESQUAD_BRILLIANCE = 128
-    HYPESQUAD_BALANCE    = 256
-    EARLY_SUPPORTER      = 512
+    DISCORD_EMPLOYEE     = 1  # noqa
+    DISCORD_PARTNER      = 2  # noqa
+    DISCORD_HYPESQUAD    = 4  # noqa
+    DISCORD_BUG_HUNTER   = 8  # noqa
+    HYPESQUAD_BRAVERY    = 64  # noqa
+    HYPESQUAD_BRILLIANCE = 128  # noqa
+    HYPESQUAD_BALANCE    = 256  # noqa
+    EARLY_SUPPORTER      = 512  # noqa
 
 
 class _BaseUser(Model, abc.DiscordUser):
@@ -59,7 +59,7 @@ class _BaseUser(Model, abc.DiscordUser):
         self.avatar_hash = data['avatar']
 
     def __str__(self):
-        return '{0.username}#{0.discriminator}'.format(self)
+        return '{0.name}#{0.discriminator}'.format(self)
 
     @property
     def mention(self):
@@ -133,7 +133,7 @@ class User(_BaseUser):
         The hash of the user's avatar.
     bot : bool, optional
         A boolean indicating whether the user is a bot or not.
-    mfa_enabled: bool, optional
+    mfa_enabled : bool, optional
         A boolean indicating whether the user has mfa enabled or not.
     verified : bool, optional
         A boolean indicating whether the user has verified his email address or not.
