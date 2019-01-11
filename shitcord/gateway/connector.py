@@ -271,9 +271,7 @@ class DiscordWebSocketClient:
 
             await self.on_message(message)
 
-    def decompress(self, message):
-        """Decompression algorithm for Gateway payloads."""
-
+    def _decompress(self, message):
         if self.zlib_compressed:
             self._buffer.extend(message)
 
@@ -327,7 +325,7 @@ class DiscordWebSocketClient:
 
         logger.debug('Received message: %s', message)
 
-        message = self.decompress(message)
+        message = self._decompress(message)
         if not message:
             return
 
