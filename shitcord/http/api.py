@@ -17,6 +17,8 @@ def optional(**kwargs):
 
 
 class API:
+    """This class represents a wrapper for all endpoints of the Discord REST API."""
+
     def __init__(self, token):
         self.http = HTTP(token)
         self._storage = contextvars.ContextVar('_storage', default=[])
