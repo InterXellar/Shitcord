@@ -1,5 +1,9 @@
 import re
+import sys
 from setuptools import find_packages, setup
+
+if sys.version_info < (3, 5, 2):
+    raise SystemExit('Upgrade your Python to 3.5+, you shitter!')
 
 with open('README.md', encoding='utf-8') as f:
     readme = f.read()
@@ -12,7 +16,7 @@ with open('shitcord/__init__.py', 'r') as f:
     version = match.group(1)
 
 extras_require = {
-    'docs': ['sphinx==1.8.2', 'sphinx_rtd_theme>=0.4.2', 'sphinx-autodoc-typehints'],
+    'docs': ['sphinx==1.8.2', 'sphinx_rtd_theme>=0.4.2', 'sphinx-autodoc-typehints', 'numpydoc', 'sphinxcontrib-napoleon'],
     'performance': ['ujson>=0.35', 'earl-etf==2.1.2'],
 }
 
