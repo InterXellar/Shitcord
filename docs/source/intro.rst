@@ -61,6 +61,13 @@ So you can install the most recent version from GitHub: ::
 This is the preferred way of installing Shitcord. If you want to use other installation methods,
 please don't expect support for the installation of this library.
 
+.. warning:: If you're using Python 3.6+ on macOS, please make sure to
+    run the ``Install certificates.command`` located in the Python folder
+    inside your ``Applications`` directory. This is important, because
+    Python 3.6+ comes with its own bundled version of OpenSSL because
+    Apple only provides deprecated binaries. Without this step, you're most
+    likely getting an `SSLError` whenever you try to run your bot.
+
 Basic Usage
 -----------
 

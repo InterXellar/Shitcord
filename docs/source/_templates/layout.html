@@ -1,0 +1,25 @@
+{% extends "!layout.html" %}
+
+{% set show_source = False %}
+
+{%- block extrahead %}
+  {{ super() }}
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+{% endblock %}
+
+{% block sidebartitle %}
+<a class="logo" href="{{ pathto(master_doc) }}">
+  <img class="logo" src="{{ pathto('_static/' + logo, 1) }}" />
+  {%- set nav_version = version %}
+  {% if READTHEDOCS and current_version %}
+    {%- set nav_version = current_version %}
+  {% endif %}
+  {% if nav_version != 'latest' %}
+    <div class="shitcord-version">{{ nav_version }}</div>
+  {% endif %}
+</a>
+
+{% include "searchbox.html" %}
+
+<p class="shitcord-help">Need help? Join our <a href="https://discord.gg/HbKGrVT">Discord server</a>.</p>
+{% endblock %}

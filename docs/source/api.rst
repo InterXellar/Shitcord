@@ -45,7 +45,28 @@ are doing! The implemented interface is way more user-friendly and safe to use.*
 HTTP
 ~~~~
 
-.. autoclass:: shitcord.http.HTTP
+.. autoclass:: shitcord.http.HTTP()
+    :members:
+
+API
+~~~
+
+.. autoclass:: shitcord.http.API()
+    :members:
+
+.. _gateway:
+
+Gateway
+-------
+
+Discord uses gateways for real-time communication with clients over WebSocket connections.
+These will be documented in the following. There are two gateway implementations, one for voice
+and the other for regular data like event dispatches.
+
+Shitcord has a full implementation of the Discord Gateway which basically represents the core of
+Shitcord's internal logic.
+
+.. autoclass:: shitcord.gateway.DiscordWebSocketClient()
     :members:
 
 .. _models:
@@ -63,6 +84,13 @@ Snowflake
 
 .. autoclass:: Snowflake()
     :members:
+
+PartialChannel
+~~~~~~~~~~~~~~
+
+.. autoclass:: PartialChannel()
+    :members:
+    :inherited-members:
 
 TextChannel
 ~~~~~~~~~~~
@@ -119,6 +147,19 @@ PartialEmoji
     :members:
     :inherited-members:
 
+Invite
+~~~~~~
+
+.. autoclass:: Invite()
+    :members:
+
+Member
+~~~~~~
+
+.. autoclass:: Member()
+    :members:
+    :inherited-members:
+
 Permissions
 ~~~~~~~~~~~
 
@@ -131,14 +172,20 @@ Role
 .. autoclass:: Role()
     :members:
 
-.. _utils:
-
 User
 ~~~~
 
 .. autoclass:: User()
     :members:
     :inherited-members:
+
+Webhook
+~~~~~~~
+
+.. autoclass:: Webhook()
+    :members:
+
+.. _utils:
 
 Utils
 -----
@@ -154,10 +201,32 @@ EventEmitter
 .. autoclass:: EventEmitter
     :members:
 
+.. _exceptions
+
 Exceptions
 ----------
 
 The following exceptions are thrown by Shitcord.
+
+ShitRequestFailed
+~~~~~~~~~~~~~~~~~
+
+This exception receives its own section because this one is a bit different from the others.
+Errors like
+
+.. code-block:: python
+
+    shitcord.http.errors.ShitRequestFailed: Your shit ('GET', '/users/01234') failed with code 10013 (HTTP code 404): Unknown User
+
+are quite special. They look a bit cryptic, but they are easy to understand.
+
+First of all, you need to know that Shitcord only raises one error for any HTTP request failure: ``ShitRequestFailed``.
+And because of that, this one contains all necessary information.
+
+They contain a **JSON code** and an **HTTP response code** as well as the **bucket** the request was made to.
+The bucket represents the endpoint of the Discord API + the used HTTP method. The JSON and the HTTP code can be looked up `here <https://discordapp.com/developers/docs/topics/opcodes-and-status-codes#http-http-response-codes>`_.
+
+This is the recommended way to look up the codes you received for you to know why the request failed.
 
 .. autoexception:: shitcord.http.ShitRequestFailed()
 

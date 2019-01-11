@@ -6,7 +6,7 @@
 Welcome to Shitcord's documentation!
 ====================================
 
-.. image:: /images/header.png
+.. image:: /_static/logo.png
    :width: 500px
    :align: center
    :alt: Fucking shit, why doesn't this browser display our awesome header?
@@ -18,8 +18,9 @@ However, you can either use it with an async/await syntax or completely without.
    :maxdepth: 2
    :caption: Table of Contents:
 
-   intro
-   api
+   intro.rst
+   get-started.rst
+   api.rst
 
 
 
