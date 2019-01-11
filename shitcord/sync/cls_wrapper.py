@@ -21,6 +21,73 @@ class SyncMeta:
         return attr
 
 
+class DiscordWebSocketClient(shitcord.gateway.DiscordWebSocketClient, SyncMeta):
+    pass
+
+
+class Colour(shitcord.Colour, SyncMeta):
+    pass
+
+
+Color = Colour
+
+
+class Emoji(shitcord.Emoji, SyncMeta):
+    pass
+
+
+class Invite(shitcord.Invite, SyncMeta):
+    pass
+
+
+class Member(shitcord.Member, SyncMeta):
+    pass
+
+
+class PartialChannel(shitcord.PartialChannel, SyncMeta):
+    pass
+
+
+class PartialEmoji(shitcord.PartialEmoji, SyncMeta):
+    pass
+
+
+class Permissions(shitcord.Permissions, SyncMeta):
+    pass
+
+
+class TextChannel(shitcord.TextChannel, SyncMeta):
+    pass
+
+
+class DMChannel(shitcord.DMChannel, SyncMeta):
+    pass
+
+
+class Role(shitcord.Role, SyncMeta):
+    pass
+
+
+class VoiceChannel(shitcord.VoiceChannel, SyncMeta):
+    pass
+
+
+class GroupDMChannel(shitcord.GroupDMChannel, SyncMeta):
+    pass
+
+
+class CategoryChannel(shitcord.CategoryChannel, SyncMeta):
+    pass
+
+
+class User(shitcord.User, SyncMeta):
+    pass
+
+
+class Webhook(shitcord.Webhook, SyncMeta):
+    pass
+
+
 class HTTP(shitcord.http.HTTP, SyncMeta):
     pass
 
@@ -29,5 +96,17 @@ class Limiter(shitcord.http.Limiter, SyncMeta):
     pass
 
 
-class Endpoints(shitcord.http.Endpoints, SyncMeta):
+class API(shitcord.http.API, SyncMeta):
+    pass
+
+
+class EventEmitter(shitcord.EventEmitter, SyncMeta):
+    pass
+
+
+class GatewayLimiter(shitcord.utils.Limiter, SyncMeta):
+    pass
+
+
+class Cache(shitcord.utils.Cache, SyncMeta):
     pass

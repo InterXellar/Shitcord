@@ -49,11 +49,29 @@ _thread = SyncExecution()
 _thread.start()
 
 from .cls_wrapper import (  # noqa
+    DiscordWebSocketClient,
+    Colour,
+    Color,
+    Emoji,
+    Invite,
+    Member,
+    PartialChannel,
+    PartialEmoji,
+    Permissions,
+    TextChannel,
+    DMChannel,
+    Role,
+    VoiceChannel,
+    GroupDMChannel,
+    CategoryChannel,
+    User,
+    Webhook,
     HTTP,
     Limiter,
-    Endpoints
+    API,
+    EventEmitter,
+    GatewayLimiter,
+    Cache
 )
-
-__all__ = ['HTTP', 'Limiter', 'Endpoints']
 
 signal.signal(signal.SIGINT, signal.SIG_DFL)
