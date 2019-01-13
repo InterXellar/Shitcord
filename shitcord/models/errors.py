@@ -9,3 +9,7 @@ class InvalidPermission(ModelError):
 class MissingProfile(ModelError):
     """Exception that will be raised when attributes of User should be accessed that
     are only accessible via OAuth grant."""
+
+
+class TooLarge(ModelError):
+    """Will be raised when embed attribute contents exceed their allowed length."""

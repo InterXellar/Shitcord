@@ -66,6 +66,21 @@ and the other for regular data like event dispatches.
 Shitcord has a full implementation of the Discord Gateway which basically represents the core of
 Shitcord's internal logic.
 
+JSONEncoder
+~~~~~~~~~~~
+
+.. autoclass:: shitcord.gateway.encoding.JSONEncoder()
+    :members:
+
+ETFEncoder
+~~~~~~~~~~
+
+.. autoclass:: shitcord.gateway.encoding.ETFEncoder()
+    :members:
+
+Gateway
+~~~~~~~
+
 .. autoclass:: shitcord.gateway.DiscordWebSocketClient()
     :members:
 
@@ -131,6 +146,54 @@ Colour
 ~~~~~~
 
 .. autoclass:: Colour
+    :members:
+
+Embed
+~~~~~
+
+.. autoclass:: Embed
+    :members:
+
+EmbedThumbnail
+**************
+
+.. autoclass:: EmbedThumbnail()
+    :members:
+
+EmbedVideo
+**********
+
+.. autoclass:: EmbedVideo()
+    :members:
+
+EmbedImage
+**********
+
+.. autoclass:: EmbedImage()
+    :members:
+
+EmbedProvider
+*************
+
+.. autoclass:: EmbedProvider()
+    :members:
+
+EmbedAuthor
+***********
+
+.. autoclass:: EmbedAuthor()
+    :members:
+
+EmbedFooter
+***********
+
+.. autoclass:: EmbedFooter()
+    :members:
+
+EmbedField
+**********
+
+.. autoclass::EmbedField()
     :members:
 
 Emoji
@@ -230,8 +293,19 @@ This is the recommended way to look up the codes you received for you to know wh
 
 .. autoexception:: shitcord.http.ShitRequestFailed()
 
+.. autoexception:: shitcord.gateway.GatewayException
+
+.. autoexception:: shitcord.gateway.ConnectingFailed
+
+.. autoexception:: shitcord.gateway.NoMoreReconnects
+
+.. autoexception:: shitcord.gateway.InvalidEvent
+    :members:
+
 .. autoexception:: shitcord.models.ModelError
 
 .. autoexception:: shitcord.models.InvalidPermission
 
 .. autoexception:: shitcord.models.MissingProfile
+
+.. autoexception:: shitcord.models.TooLarge

@@ -52,6 +52,7 @@ Installing
 
 As this library is still WIP, it isn't published on PyPI yet.
 So you can install the most recent version from GitHub: ::
+
     # Windows:
     py -3 -m pip install -U git+https://github.com/itsVale/Shitcord@async#egg=shitcord
 
@@ -76,6 +77,7 @@ at any time, we don't provide a usage example yet. Also, it is not very user-fri
 stay patient unless you are willing to read the source code.
 
 .. code-block:: python
+
     # Usage example will follow.
 
 Support

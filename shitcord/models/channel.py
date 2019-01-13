@@ -141,7 +141,7 @@ class TextChannel(_BaseChannel, abc.GuildChannel, abc.Sendable):
 class DMChannel(_BaseChannel, abc.PrivateChannel, abc.Sendable):
     """Represents a DMChannel model from the Discord API.
 
-    This channel type represents a private channel between 2 `User`s.
+    This channel type represents a private channel 2 :class:`User`s share.
 
     Attributes
     ----------
@@ -174,8 +174,7 @@ class VoiceChannel(_BaseChannel, abc.Connectable, abc.GuildChannel):
     """Represents a VoiceChannel model from the Discord API.
 
     VoiceChannels are channels, Users can connect to and transmit audio.
-    Audio usually must be encoded with the opus codec.
-    Like :class:`TextChannel`, this channel type also always has a Guild it belongs to.
+    Like :class:`TextChannel`, this channel type also always has a :class:`Guild` it belongs to.
 
     Attributes
     ----------

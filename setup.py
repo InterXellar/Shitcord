@@ -16,7 +16,7 @@ with open('shitcord/__init__.py', 'r') as f:
     version = match.group(1)
 
 extras_require = {
-    'docs': ['sphinx==1.8.2', 'sphinx_rtd_theme>=0.4.2', 'sphinx-autodoc-typehints', 'numpydoc', 'sphinxcontrib-napoleon'],
+    'docs': ['sphinx==1.8.2', 'sphinx_rtd_theme>=0.4.2', 'sphinx-autodoc-typehints', 'sphinxcontrib-napoleon'],
     'performance': ['ujson>=0.35', 'earl-etf==2.1.2'],
 }
 

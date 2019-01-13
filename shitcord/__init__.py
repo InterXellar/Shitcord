@@ -26,7 +26,7 @@ from .http import *
 from .gateway import *
 from .models import *
 from .utils import *
-from .sync import *
+import shitcord.sync  # We don't want our classes from shitcord.models overridden
 
 VersionInfo = namedtuple('VersionInfo', 'major minor micro releaselevel serial')
 version_info = VersionInfo(major=0, minor=0, micro=3, releaselevel='beta', serial=0)

@@ -34,8 +34,6 @@ with open('../../shitcord/__init__.py') as f:
 # The full version, including alpha/beta/rc tags
 release = version
 
-autodoc_inherit_docstrings = False
-
 html_favicon = '_static/favicon.ico'
 html_logo = '_static/banner.png'
 
@@ -59,11 +57,11 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.intersphinx',
     'sphinx.ext.extlinks',
-    'sphinxcontrib.napoleon',
+    'sphinx.ext.napoleon',
     'sphinx_autodoc_typehints',
-    'numpydoc',
 ]
 
+autodoc_inherit_docstrings = False
 autodoc_member_order = 'bysource'
 
 intersphinx_mapping = {
