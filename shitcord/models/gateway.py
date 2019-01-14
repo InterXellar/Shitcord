@@ -2,7 +2,6 @@
 
 import enum
 
-from .base import Model
 from .user import User
 
 
@@ -17,11 +16,11 @@ class StatusType(enum.Enum):
 class ActivityType(enum.IntEnum):
     PLAYING   = 0
     STREAMING = 1
-    LISTENING = 2
+    ListENING = 2
     WATCHING  = 3
 
 
-class Activity(Model):
+class Activity:
     """Represents the activity of a User or a Bot
 
     Activities show what a User or Bot is doing right now.
@@ -39,9 +38,7 @@ class Activity(Model):
 
     __slots__ = ('name', 'type', 'url')
 
-    def __init__(self, data, http, activity_type=ActivityType.PLAYING):
-        super().__init__(data, http=http)
-
+    def __init__(self, data, activity_type=ActivityType.PLAYING):
         self.name = data['name']
         self.type = activity_type.value
         self.url = data.get('url')
@@ -50,6 +47,12 @@ class Activity(Model):
         if self.type is 1 and self.url is None:
             raise ValueError('Streaming status isn\'t allowed without a valid twitch.tv url provided.')
 
+        return {
+            'name': self.name,
+            'type': self.type,
+            'url': self.url
+        }
+
     def __str__(self):
         return self.name
 
@@ -57,7 +60,7 @@ class Activity(Model):
         return '<shitcord.Activity name={}>'.format(self.name)
 
 
-class Presence(Model):
+class Presence:
     """Represents the current Presence of a User on a Guild.
 
     A user's presence is their current state on a guild.
@@ -67,7 +70,7 @@ class Presence(Model):
     ----------
     user : :class:`User`
         The user presence is being updated for.
-    roles : list[int]
+    roles : List[int]
         Roles the user is in.
     game : :class:`Activity`
         Null, or the user's current activity.
@@ -75,18 +78,19 @@ class Presence(Model):
         ID of the guild.
     status : str
         Either idle, dnd, online, or offline.
-    activities : list[:class:`Activity`]
+    activities : List[:class:`Activity`]
         User's current activities.
     """
 
     __slots__ = ('user', 'roles', 'game', 'guild_id', 'status', 'activities')
 
     def __init__(self, data, http):
-        super().__init__(data, http=http)
-
-        self.user = User(data['user'], self._http)
+        self.user = User(data['user'], http)
         self.roles = data['roles']
-        self.game = Activity(data['game'], self._http)
         self.guild_id = data['guild_id']
         self.status = data['status']
         self.activities = [Activity(activity, http) for activity in data['activities']]
+
+        self.game = data.get('game')
+        if self.game:
+            self.game = Activity(self.game)

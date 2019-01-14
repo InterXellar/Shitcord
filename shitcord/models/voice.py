@@ -4,7 +4,7 @@ from .base import Model
 from .member import Member
 
 
-class VoiceState(Model):
+class VoiceState:
     """Represents a Voice State Model from the Discord API
 
     Used to represent a user's voice connection status.
@@ -36,8 +36,6 @@ class VoiceState(Model):
     __slots__ = ('guild_id', 'channel_id', 'user_id', 'member', 'session_id', 'deaf', 'mute', 'self_deaf', 'self_mute', 'suppress')
 
     def __init__(self, data, http):
-        super().__init__(data, http=http)
-
         self.guild_id = data.get('guild_id')
         self.channel_id = data['channel_id']
         self.user_id = data['user_id']
@@ -50,10 +48,10 @@ class VoiceState(Model):
 
         self.member = data.get('member')
         if self.member:
-            self.member = Member(self.member, self._http)
+            self.member = Member(self.member, http)
 
     def __repr__(self):
-        return '<shitcord.VoiceState id={}>'.format(self.id)
+        return '<shitcord.VoiceState id={}>'.format(self.gui)
 
 
 class VoiceRegion(Model):

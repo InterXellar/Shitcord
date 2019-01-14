@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from .base import Model
-from .role import Role
 from .emoji import Emoji
+from .base import Model
 from .member import Member
-from .voice import VoiceState
 from .gateway import Presence
+from .role import Role
+from .voice import VoiceState
 from .channel import _channel_from_payload
 from .channel import _get_as_datetime
 
@@ -50,11 +50,11 @@ class Guild(Model):
         Default message notification level.
     explicit_content_filter : int
         Explicit content filter level
-    roles : list[:class:`Role`]
+    roles : List[:class:`Role`]
         Roles in the guild.
-    emojis : list[:class:`Emoji`]
+    emojis : List[:class:`Emoji`]
         Emojis in the guild.
-    features : list[str]
+    features : List[str]
         The enabled features of the guild.
     mfa_level : int
         The required mfa level for the guild.
@@ -74,13 +74,13 @@ class Guild(Model):
         Whether this guild is unavailable or not.
     member_count : int, optional
         Total number of members in that guild.
-    voice_states : list[:class:`VoiceState`], optional
+    voice_states : List[:class:`VoiceState`], optional
         List of voice states objects of the guild.
-    members : list[:class:`Member`], optional
+    members : List[:class:`Member`], optional
         Members of the guild.
-    channels : list[:class:`Channel`], optional
+    channels : List[:class:`Channel`], optional
         The channels of the guild.
-    presences : list[:class:`Presence`], optional
+    presences : List[:class:`Presence`], optional
         Presences of the users in the guild.
     """
 
@@ -107,7 +107,7 @@ class Guild(Model):
         self.default_message_notifications = data['default_message_notifications']
         self.explicit_content_filter = data['explicit_content_filter']
         self.roles = [Role(role, http) for role in data['roles']]
-        self.emojis = [Emoji(emoji, http) for emoji in data['emojis']]
+        self.emojis = [Emoji(self.id, emoji, http) for emoji in data['emojis']]
         self.features = data['features']
         self.mfa_level = data['mfa_level']
         self.application_id = data['application_id']
