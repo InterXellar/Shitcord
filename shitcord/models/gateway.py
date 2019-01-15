@@ -23,11 +23,11 @@ class StatusType(enum.Enum):
         Indicates an offline status.
     """
 
-    ONLINE         = 'online'
-    DND            = 'dnd'
-    IDLE           = 'idle'
-    INVISIBLE      = 'invisible'
-    OFFLINE        = 'offline'
+    ONLINE         = 'online'  # noqa
+    DND            = 'dnd'  # noqa
+    IDLE           = 'idle'  # noqa
+    INVISIBLE      = 'invisible'  # noqa
+    OFFLINE        = 'offline'  # noqa
 
 
 class ActivityType(enum.IntEnum):
@@ -45,10 +45,10 @@ class ActivityType(enum.IntEnum):
         Use this for a ``watching ...`` presence. The value is 3.
     """
 
-    PLAYING   = 0
-    STREAMING = 1
-    LISTENING = 2
-    WATCHING  = 3
+    PLAYING   = 0  # noqa
+    STREAMING = 1  # noqa
+    LISTENING = 2  # noqa
+    WATCHING  = 3  # noqa
 
 
 class Activity:
