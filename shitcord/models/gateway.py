@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import enum
+import typing
 
 from .user import User
 
@@ -38,9 +39,9 @@ class Activity:
 
     __slots__ = ('name', 'type', 'url')
 
-    def __init__(self, data, activity_type=ActivityType.PLAYING):
+    def __init__(self, data, activity_type: typing.Union[int, ActivityType] = ActivityType.PLAYING):
         self.name = data['name']
-        self.type = activity_type.value
+        self.type = activity_type.value if isinstance(activity_type, ActivityType) else activity_type
         self.url = data.get('url')
 
     def to_json(self):
@@ -93,4 +94,4 @@ class Presence:
 
         self.game = data.get('game')
         if self.game:
-            self.game = Activity(self.game)
+            self.game = Activity(self.game, self.game['type'])
