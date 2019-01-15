@@ -210,6 +210,33 @@ PartialEmoji
     :members:
     :inherited-members:
 
+Activity
+~~~~~~~~
+
+.. autoclass:: Activity()
+    :members:
+
+
+ActivityType
+~~~~~~~~~~~~
+
+.. autoclass:: ActivityType()
+    :inherited-members:
+
+
+Presence
+~~~~~~~~
+
+.. autoclass:: Presence()
+    :members:
+
+
+StatusType
+~~~~~~~~~~
+
+.. autoclass:: StatusType()
+    :inherited-members:
+
 Invite
 ~~~~~~
 

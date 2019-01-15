@@ -7,6 +7,22 @@ from .user import User
 
 
 class StatusType(enum.Enum):
+    """An enumeration for all the different status types supported by the Discord API.
+
+    Attributes
+    ----------
+    ONLINE : str
+        Indicates an online status.
+    DND : str
+        Indicates a Do Not Disturb status.
+    IDLE : str
+        Indicates an Idle status.
+    INVISIBLE : str
+        Indicates an invisible status.
+    OFFLINE : str
+        Indicates an offline status.
+    """
+
     ONLINE         = 'online'
     DND            = 'dnd'
     IDLE           = 'idle'
@@ -15,6 +31,20 @@ class StatusType(enum.Enum):
 
 
 class ActivityType(enum.IntEnum):
+    """An enumeration for all the different activity types supported by the Discord API.
+
+    Attributes
+    ----------
+    PLAYING : int
+        Use this for a ``playing ...`` presence. The value is 0.
+    STREAMING : int
+        Use this for a ``streaming ...`` presence. The value is 1.
+    LISTENING : int
+        Use this for a ``listening to ...`` presence. The value is 2.
+    WATCHING : int
+        Use this for a ``watching ...`` presence. The value is 3.
+    """
+
     PLAYING   = 0
     STREAMING = 1
     LISTENING = 2
@@ -25,7 +55,8 @@ class Activity:
     """Represents the activity of a User or a Bot
 
     Activities show what a User or Bot is doing right now.
-    Side note: This Model doesn't have Rich Presence implemented
+
+    .. note:: This Model doesn't have Rich Presence stuff implemented.
 
     Attributes
     ----------
