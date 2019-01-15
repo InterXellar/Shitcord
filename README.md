@@ -14,6 +14,8 @@
     <a href='https://shitcord.readthedocs.io/en/async/?badge=async'>
         <img src='https://readthedocs.org/projects/shitcord/badge/?version=async' alt='Documentation Status'>
     </a>
+    &nbsp;
+    <a href="https://codeclimate.com/github/itsVale/Shitcord/maintainability"><img src="https://api.codeclimate.com/v1/badges/b29cb31a8dd06c02c4dd/maintainability"></a>
     <hr>
 </div>
 
