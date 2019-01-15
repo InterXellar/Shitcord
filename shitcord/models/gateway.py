@@ -16,7 +16,7 @@ class StatusType(enum.Enum):
 class ActivityType(enum.IntEnum):
     PLAYING   = 0
     STREAMING = 1
-    ListENING = 2
+    LISTENING = 2
     WATCHING  = 3
 
 
