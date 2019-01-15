@@ -53,7 +53,8 @@ Assuming your branch is called `my_cool_new_feature`, you need to push it to Git
 git push origin my_cool_new_feature
 ```
 
-And then you're all ready! Use GitHub's interface to create a pull request for Shitcord, fill out the template and we'll review it.
+And then you're all ready! Use GitHub's interface to create a pull request for Shitcord on the `dev` branch,
+fill out the template and we'll review it.
 
 **Important: Please do not change Shitcord's version yourself. That's what we do for you.**
 
