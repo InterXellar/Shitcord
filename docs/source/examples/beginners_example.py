@@ -5,8 +5,8 @@ client = shitcord.Client()
 
 @client.on('message')
 async def on_message(message):
-    if message.content.startswith('!ping'):
-        await message.respond('Pong!')
+    if 'owo' in str(message).lower():
+        await message.respond("What's This?")
 
 
 client.start('Token')
