@@ -7,8 +7,8 @@ Want to contribute? Great! First, read this page.
 Encountered a bug? Report it then! Bug reports are very important to us because they help us improving our
 library and make it more usable for everyone.  
 **Please follow some simple standards for bug reports:**
-- Please completely fill out Shitcord's bug report template.
-- Include your code, all necessary details and the full traceback.
+  - Please completely fill out Shitcord's bug report template.
+  - Include your code, all necessary details and the full traceback.
 
 ## 2. Contributing Code and Docs
 

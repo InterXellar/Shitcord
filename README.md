@@ -27,12 +27,12 @@ However, this was a joke in the beginning. ;)
 At this point, the library became a serious project with focus on usability, flexibility and clean code.
 This library is sarcastic and ironic but does a great job though.
 
-**There are already that many Python libs. Why another one?**
+### There are already that many Python libs. Why another one?
 
 Indeed, there is a whole bunch of libs on GitHub. However, most of them are outdated,
 incomplete or have some bugs. This is why we wanted to create a fair alternative to those libs.
 
-**Yeah, yeah, but there are still discord.py and disco-py. Why should I use Shitcord instead of one of these libs?**
+### Yeah, yeah, but there are still discord.py and disco-py. Why should I use Shitcord instead of one of these libs?
 
 Questions like these will always be answered with "use whatever you like". We personally dislike some
 design aspects of both libs, discord.py is missing Voice Gateway event dispatches, and both of them have partially shit docs.
