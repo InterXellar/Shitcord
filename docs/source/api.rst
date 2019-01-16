@@ -237,6 +237,18 @@ StatusType
 .. autoclass:: StatusType()
     :inherited-members:
 
+Guild
+~~~~~
+
+.. autoclass:: Guild()
+    :members:
+
+PartialGuild
+~~~~~~~~~~~~
+
+.. autoclass:: PartialGuild()
+    :members:
+
 Invite
 ~~~~~~
 
@@ -268,6 +280,18 @@ User
 .. autoclass:: User()
     :members:
     :inherited-members:
+
+VoiceRegion
+~~~~~~~~~~~
+
+.. autoclass:: VoiceRegion()
+    :members:
+
+VoiceState
+~~~~~~~~~~
+
+.. autoclass:: VoiceState()
+    :members:
 
 Webhook
 ~~~~~~~
