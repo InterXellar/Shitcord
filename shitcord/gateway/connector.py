@@ -8,13 +8,14 @@ import typing
 import zlib
 from contextlib import contextmanager
 
-import contextvars
+import contextvars  # trio includes a backport for lower Python versions than 3.7
 import trio
 import trio_websocket
 from wsproto.frame_protocol import Opcode as WSOpcodes
 
 from .encoding import ENCODERS
 from .errors import GatewayException, NoMoreReconnects
+from .gateway import WebSocketClient
 from .opcodes import Opcodes
 from .serialization import identify, resume
 from ..utils import gateway, event_emitter
@@ -23,7 +24,7 @@ logger = logging.getLogger(__name__)
 none_func = lambda *a, **kw: None
 
 
-class DiscordWebSocketClient:
+class DiscordWebSocketClient(WebSocketClient):
     """Implements a WebSocket client for the Discord Gateway v6.
 
     WebSockets will be used to establish a connection to the Discord Gateway.
@@ -213,26 +214,31 @@ class DiscordWebSocketClient:
         await self._send(opcode, payload)
 
     async def __heartbeat_task(self):
-        await self._receive_heartbeat.receive()
+        if not self.interval:
+            await self._receive_heartbeat.receive()
 
-        while not self.shutting_down.is_set() or self._con.closed:
-            if not self._heartbeat_ack:
-                logger.error('No HEARTBEAT_ACK received from that crap. Forcing a reconnect.')
-                self._heartbeat_ack = True
-                await self._close(4000, 'Zombied connection, you shitters!')
-                break
+        if not self._heartbeat_ack:
+            logger.error('No HEARTBEAT_ACK received from that crap. Forcing a reconnect.')
+            self._heartbeat_ack = True
+            await self._close(4000, 'Zombied connection, you shitters!')
+            return
 
-            logger.debug('Sending Heartbeat with Sequence: %s.', self.sequence)
-            await self._send(Opcodes.HEARTBEAT, self.sequence)
-            self._last_sent = time.perf_counter()
-            self._heartbeat_ack = False
-            await trio.sleep(self.interval / 1000)
+        logger.debug('Sending Heartbeat with Sequence: %s.', self.sequence)
+        await self._send(Opcodes.HEARTBEAT, self.sequence)
+        self._last_sent = time.perf_counter()
+        self._heartbeat_ack = False
+
+        await trio.sleep(self.interval / 1000)
+
+        if not self.shutting_down.is_set() or self._con.closed:
+            await self.__heartbeat_task()
 
     async def _handle_dispatch(self, event, payload):
         if event == 'ready':
             self.session_id = payload['session_id']
 
         # TODO: Caching & Updating already cached objects.
+        # TODO:
 
     async def _handle_heartbeat(self, _):
         logger.debug('Heartbeat requested by the Discord Gateway.')
@@ -261,15 +267,6 @@ class DiscordWebSocketClient:
         self.latency = ack_time - self._last_sent
         logger.debug('Received HEARTBEAT_ACK.')
         self._heartbeat_ack = True
-
-    async def _message_task(self):
-        while not self.shutting_down.is_set() or self._con.closed:
-            try:
-                message = await self._con.get_message()
-            except trio_websocket.ConnectionClosed:
-                break
-
-            await self.on_message(message)
 
     def _decompress(self, message):
         if self.zlib_compressed:
@@ -405,7 +402,7 @@ class DiscordWebSocketClient:
 
             await self.shutting_down.wait()
 
-        await self.on_close(con.closed.code, con.closed.reason)
+        await self.on_close(con.closed.code.value, con.closed.reason)
 
     async def _start(self):
         async with trio.open_nursery() as nursery:
@@ -425,8 +422,3 @@ class DiscordWebSocketClient:
     async def _close(self, code, reason=None):
         await self._con.aclose(code, reason)
         self.shutting_down.set()
-
-    def start(self):
-        """Starts the client."""
-
-        trio.run(self._start)

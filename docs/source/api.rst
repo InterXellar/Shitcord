@@ -78,11 +78,18 @@ ETFEncoder
 .. autoclass:: shitcord.gateway.encoding.ETFEncoder()
     :members:
 
-Gateway
-~~~~~~~
+WebSocketClient
+~~~~~~~~~~~~~~~
+
+.. autoclass:: shitcord.gateway.WebSocketClient()
+    :members:
+
+DiscordWebSocketClient
+~~~~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: shitcord.gateway.DiscordWebSocketClient()
     :members:
+    :inherited-members:
 
 .. _models:
 
