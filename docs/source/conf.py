@@ -16,7 +16,9 @@ import os
 import re
 import sys
 
-sys.path.insert(0, os.path.abspath('..'))
+import sphinx_rtd_theme
+
+sys.path.insert(0, os.path.abspath('../..'))
 
 
 # -- Project information -----------------------------------------------------
@@ -26,10 +28,19 @@ copyright = '2018, Valentin B.'
 author = 'Valentin B.'
 
 # The short X.Y version
-version = ''
+with open('../../shitcord/__init__.py') as f:
+    version = re.search(r'^__version__\s=\s\'(\d.\d.\d([ab])?)\'$', f.read(), re.MULTILINE).group(1)
+
 # The full version, including alpha/beta/rc tags
-with open('../shitcord/__init__.py') as f:
-    release = re.search(r'^__version__\s=\s\'(\d.\d.\d([ab])?)\'$', f.read(), re.MULTILINE).group(1)
+release = version
+
+html_favicon = '_static/favicon.ico'
+html_logo = '_static/banner.png'
+
+
+def setup(app):
+    app.add_javascript('highlight.js')
+    app.add_stylesheet('style.css')
 
 
 # -- General configuration ---------------------------------------------------
@@ -44,12 +55,18 @@ with open('../shitcord/__init__.py') as f:
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.viewcode',
-    'sphinx.ext.githubpages',
+    'sphinx.ext.intersphinx',
     'sphinx.ext.extlinks',
+    'sphinx.ext.napoleon',
     'sphinx_autodoc_typehints',
 ]
 
+autodoc_inherit_docstrings = False
 autodoc_member_order = 'bysource'
+
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/3', None),
+}
 
 extlinks = {
     'issue': ('https://github.com/itsVale/Shitcord/issues/%s', 'issue '),
@@ -86,7 +103,11 @@ language = None
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = None
+pygments_style = 'default'
+
+highlight_language = 'python3'
+
+todo_include_todos = False
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -95,12 +116,17 @@ pygments_style = None
 # a list of builtin themes.
 #
 html_theme = 'sphinx_rtd_theme'
+html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
-# html_theme_options = {}
+html_theme_options = {
+    'navigation_depth': 4,
+    'logo_only': True,
+    'prev_next_buttons_location': 'both'
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,

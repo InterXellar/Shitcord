@@ -1,63 +1,68 @@
 <div align="center">
-    <img src="https://user-images.githubusercontent.com/38182450/46910084-abad8d80-cf3e-11e8-9be3-09c9078b2c3a.png" width="400px" />
+    <img src="https://user-images.githubusercontent.com/38182450/51039756-317cbb80-15b6-11e9-9400-c7e4fa8ad630.png" width="400px" />
     <h1>~~ Shitcord ~~</h1>
     <strong>A shitty, probably not even that shitty Discord API wrapper.</strong>
     <br><br>
-    <a class="badge-align" href="https://www.codacy.com/app/itsVale/Shitcord?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=itsVale/Shitcord&amp;utm_campaign=Badge_Grade"><img src="https://api.codacy.com/project/badge/Grade/b3ed9f02a50142bf9fd337978be88b24"/></a>
+    <a class="badge-align" href="https://www.codacy.com/app/itsVale/Shitcord?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=itsVale/Shitcord&amp;utm_campaign=Badge_Grade">
+        <img src="https://api.codacy.com/project/badge/Grade/b3ed9f02a50142bf9fd337978be88b24">
+    </a>
     &nbsp;
-    <a href="https://travis-ci.com/itsVale/Shitcord"><img src="https://travis-ci.com/itsVale/Shitcord.svg?branch=async" /></a>
+    <a href="https://travis-ci.com/itsVale/Shitcord">
+        <img src="https://travis-ci.com/itsVale/Shitcord.svg?branch=async">
+    </a>
     &nbsp;
-    <a href='https://shitcord.readthedocs.io/en/async'><img src='https://readthedocs.org/projects/shitcord/badge/?version=async' alt='Documentation Status' /></a>
+    <a href='https://shitcord.readthedocs.io/en/async/?badge=async'>
+        <img src='https://readthedocs.org/projects/shitcord/badge/?version=async' alt='Documentation Status'>
+    </a>
     &nbsp;
-    <a href="https://GitHub.com/itsVale/Shitcord/issues/"><img src="https://img.shields.io/github/issues/itsVale/Shitcord.svg" /></a>
-    &nbsp;
-    <a href="https://GitHub.com/itsVale/Shitcord/pulls/"><img src="https://img.shields.io/github/issues-pr/itsVale/Shitcord.svg" /></a>
-    &nbsp;
-    <a href="http://perso.crans.org/besson/LICENSE.html"><img src="https://img.shields.io/badge/License-GPLv3-blue.svg" /></a>
+    <a href="https://codeclimate.com/github/itsVale/Shitcord/maintainability"><img src="https://api.codeclimate.com/v1/badges/b29cb31a8dd06c02c4dd/maintainability"></a>
     <hr>
 </div>
 
-_Though this library is incomplete yet, contributions are very appreciated!_
+## About this project
+
+Shitcord is a Discord API wrapper for Python 3.5+. [Wambo](https://github.com/byWambo) and me
+had the idea of developing a lib that is so user-friendly that it won't ever overtax any retard.
+However, this was a joke in the beginning. ;)  
+At this point, the library became a serious project with focus on usability, flexibility and clean code.
+This library is sarcastic and ironic but does a great job though.
+
+### There are already that many Python libs. Why another one?
+
+Indeed, there is a whole bunch of libs on GitHub. However, most of them are outdated,
+incomplete or have some bugs. This is why we wanted to create a fair alternative to those libs.
+
+### Yeah, yeah, but there are still discord.py and disco-py. Why should I use Shitcord instead of one of these libs?
+
+Questions like these will always be answered with "use whatever you like". We personally dislike some
+design aspects of both libs, discord.py is missing Voice Gateway event dispatches, and both of them have partially shit docs.
+We don't want to indicate that these libraries are bad, but still these aspects were reasoning enough for us to develop our own library.
 
 ## Installation
-For now, you can only install the dev branch which is constantly updated.
+
+You have multiple options for installing this library:
 ```
-pip install -U https://github.com/itsVale/Shitcord/archive/async.zip
+$ python3 -m pip install -U shitcord
+$ python3 -m pip install -U git+https://github.com/itsVale/Shitcord@async#egg=shitcord
+$ python3 -m pip install https://github.com/itsVale/Shitcord/archive/async.zip
+
+$ git clone https://github.com/itsVale/Shitcord
+$ cd Shitcord
+$ python3 setup.py install
 ```
 
-Shitcord already features the REST API and also the Discord Gateway. Though the lib is very
-incomplete at this moment what you can see from the code below.  
-  
-__Note that this branch features an asynchronous version of Shitcord that hasn't got a Gateway implementation yet.__
+## Documentation
 
-## Usage
-```python
-import logging
+Shitcord has some nice docs [here](https://shitcord.readthedocs.io/en/async/).
 
-import trio
-from shitcord.http import Endpoints, HTTP
+You will find lots of useful explanations, examples and nice hints. It's highly recommended to check
+them out before you start using this library.  
+Also, check them out for examples on how to get started with the lib.
 
-# Set up logging for receiving Shitcord's debug logs.
-logger = logging.getLogger('shitcord')
-logger.level = logging.DEBUG
+## Contributing
 
-# Create an instance of the HTTP class that interfaces with the REST API.
-http = HTTP('Bot token goes here.')
-# Define the channel ID where the messages should be sent.
-channel_id = 12345
-# Define the payload that should be sent. For sending messages, we only need a content key.
-json = {'content': 'Hello, I\'m using Shitcord and I\'m cool.'}
-
-
-# Please don't do this lol. Insider from the Shitcord Discord server.
-async def spam_the_api(channel_id: int):
-    while True:
-        await http.make_request(Endpoints.CREATE_MESSAGE, dict(channel=channel_id), json=json)
-
-
-# And finally launch your program.
-trio.run(spam_the_api, channel_id)
-```
+If you're planning to contribute to Shitcord, please read our [contribution guidelines](https://github.com/itsVale/Shitcord/blob/async/CONTRIBUTING.md) first.
 
 ## Support
-Need help with something or just want to hang out with more or less cool guys? [Join our cool Discord server!](https://discord.gg/HbKGrVT)
+
+Need help with something or just need a place to hang out? Check out our [Discord server](https://discord.gg/HbKGrVT).

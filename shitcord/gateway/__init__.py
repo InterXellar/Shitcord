@@ -2,7 +2,7 @@
 
 from .connector import DiscordWebSocketClient
 from .encoding import ENCODERS
-from .errors import ConnectingFailed, GatewayException, InvalidEvent
+from .errors import *
 from .opcodes import Opcodes
 from .serialization import identify, resume
 

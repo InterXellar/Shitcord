@@ -1,30 +1,62 @@
 # -*- coding: utf-8 -*-
 
 import enum
+import typing
 
 from .user import User
 
 
 class StatusType(enum.Enum):
-    ONLINE         = 'online'
-    DND            = 'dnd'
-    IDLE           = 'idle'
-    INVISIBLE      = 'invisible'
-    OFFLINE        = 'offline'
+    """An enumeration for all the different status types supported by the Discord API.
+
+    Attributes
+    ----------
+    ONLINE : str
+        Indicates an online status.
+    DND : str
+        Indicates a Do Not Disturb status.
+    IDLE : str
+        Indicates an Idle status.
+    INVISIBLE : str
+        Indicates an invisible status.
+    OFFLINE : str
+        Indicates an offline status.
+    """
+
+    ONLINE         = 'online'  # noqa
+    DND            = 'dnd'  # noqa
+    IDLE           = 'idle'  # noqa
+    INVISIBLE      = 'invisible'  # noqa
+    OFFLINE        = 'offline'  # noqa
 
 
 class ActivityType(enum.IntEnum):
-    PLAYING   = 0
-    STREAMING = 1
-    ListENING = 2
-    WATCHING  = 3
+    """An enumeration for all the different activity types supported by the Discord API.
+
+    Attributes
+    ----------
+    PLAYING : int
+        Use this for a ``playing ...`` presence. The value is 0.
+    STREAMING : int
+        Use this for a ``streaming ...`` presence. The value is 1.
+    LISTENING : int
+        Use this for a ``listening to ...`` presence. The value is 2.
+    WATCHING : int
+        Use this for a ``watching ...`` presence. The value is 3.
+    """
+
+    PLAYING   = 0  # noqa
+    STREAMING = 1  # noqa
+    LISTENING = 2  # noqa
+    WATCHING  = 3  # noqa
 
 
 class Activity:
     """Represents the activity of a User or a Bot
 
     Activities show what a User or Bot is doing right now.
-    Side note: This Model doesn't have Rich Presence implemented
+
+    .. note:: This Model doesn't have Rich Presence stuff implemented.
 
     Attributes
     ----------
@@ -38,9 +70,9 @@ class Activity:
 
     __slots__ = ('name', 'type', 'url')
 
-    def __init__(self, data, activity_type=ActivityType.PLAYING):
+    def __init__(self, data, activity_type: typing.Union[int, ActivityType] = ActivityType.PLAYING):
         self.name = data['name']
-        self.type = activity_type.value
+        self.type = activity_type.value if isinstance(activity_type, ActivityType) else activity_type
         self.url = data.get('url')
 
     def to_json(self):
@@ -93,4 +125,4 @@ class Presence:
 
         self.game = data.get('game')
         if self.game:
-            self.game = Activity(self.game)
+            self.game = Activity(self.game, self.game['type'])

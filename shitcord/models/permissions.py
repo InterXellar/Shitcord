@@ -10,35 +10,35 @@ ValidPermissionTypes = Union[List[PossiblePermissionTypes], PossiblePermissionTy
 
 
 class PermissionTypes(Enum):
-    CREATE_INSTANT_INVITE = 0x00000001
-    KICK_MEMBERS          = 0x00000002
-    BAN_MEMBERS           = 0x00000004
-    ADMINISTRATOR         = 0x00000008
-    MANAGE_CHANNELS       = 0x00000010
-    MANAGE_GUILD          = 0x00000020
-    ADD_REACTIONS         = 0x00000040
-    VIEW_AUDIT_LOG        = 0x00000080
-    VIEW_CHANNEL          = 0x00000400
-    SEND_MESSAGES         = 0x00000800
-    SEND_TTS_MESSAGES     = 0x00001000
-    MANAGE_MESSAGES       = 0x00002000
-    EMBED_LINKS           = 0x00004000
-    ATTACH_FILES          = 0x00008000
-    READ_MESSAGE_HISTORY  = 0x00010000
-    MENTION_EVERYONE      = 0x00020000
-    USE_EXTERNAL_EMOJIS   = 0x00040000
-    CONNECT               = 0x00100000
-    SPEAK                 = 0x00200000
-    MUTE_MEMBERS          = 0x00400000
-    DEAFEN_MEMBERS        = 0x00800000
-    MOVE_MEMBERS          = 0x01000000
-    USE_VAD               = 0x02000000
-    PRIORITY_SPEAKER      = 0x00000100
-    CHANGE_NICKNAME       = 0x04000000
-    MANAGE_NICKNAMES      = 0x08000000
-    MANAGE_ROLES          = 0x10000000
-    MANAGE_WEBHOOKS       = 0x20000000
-    MANAGE_EMOJI          = 0x40000000
+    CREATE_INSTANT_INVITE = 0x00000001  # noqa
+    KICK_MEMBERS          = 0x00000002  # noqa
+    BAN_MEMBERS           = 0x00000004  # noqa
+    ADMINISTRATOR         = 0x00000008  # noqa
+    MANAGE_CHANNELS       = 0x00000010  # noqa
+    MANAGE_GUILD          = 0x00000020  # noqa
+    ADD_REACTIONS         = 0x00000040  # noqa
+    VIEW_AUDIT_LOG        = 0x00000080  # noqa
+    VIEW_CHANNEL          = 0x00000400  # noqa
+    SEND_MESSAGES         = 0x00000800  # noqa
+    SEND_TTS_MESSAGES     = 0x00001000  # noqa
+    MANAGE_MESSAGES       = 0x00002000  # noqa
+    EMBED_LINKS           = 0x00004000  # noqa
+    ATTACH_FILES          = 0x00008000  # noqa
+    READ_MESSAGE_HISTORY  = 0x00010000  # noqa
+    MENTION_EVERYONE      = 0x00020000  # noqa
+    USE_EXTERNAL_EMOJIS   = 0x00040000  # noqa
+    CONNECT               = 0x00100000  # noqa
+    SPEAK                 = 0x00200000  # noqa
+    MUTE_MEMBERS          = 0x00400000  # noqa
+    DEAFEN_MEMBERS        = 0x00800000  # noqa
+    MOVE_MEMBERS          = 0x01000000  # noqa
+    USE_VAD               = 0x02000000  # noqa
+    PRIORITY_SPEAKER      = 0x00000100  # noqa
+    CHANGE_NICKNAME       = 0x04000000  # noqa
+    MANAGE_NICKNAMES      = 0x08000000  # noqa
+    MANAGE_ROLES          = 0x10000000  # noqa
+    MANAGE_WEBHOOKS       = 0x20000000  # noqa
+    MANAGE_EMOJI          = 0x40000000  # noqa
 
 
 def match_permission_type(value: str) -> int:

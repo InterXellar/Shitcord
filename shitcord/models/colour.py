@@ -8,7 +8,7 @@ class Colour:
     """Represents a Colour class that basically wraps around a color like an RGB tuple.
 
     This class is used for displaying the colors of models from the Discord API, e.g. Role or Embed.
-    There is an alias for this under :class:`Color`.
+    There is an alias for this under ``Color``.
 
     Parameters
     ----------
@@ -16,7 +16,7 @@ class Colour:
         The color code integer.
     """
 
-    __slots__ = ('value', )
+    __slots__ = ('value',)
 
     def __init__(self, value: int):
         self.value = value

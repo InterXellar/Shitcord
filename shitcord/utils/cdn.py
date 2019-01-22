@@ -7,13 +7,13 @@ BASE_URL = 'https://cdn.discordapp.com/'
 
 
 class Endpoints(enum.Enum):
-    CUSTOM_EMOJI = ({'png', 'gif'}, 'emojis/{emoji}.{type}')
-    GUILD_ICON = ({'png', 'jpeg', 'webp'}, 'icons/{guild}/{hash}.{type}')
-    GUILD_SPLASH = ({'png', 'jpeg', 'webp'}, 'splashes/{guild}/{hash}.{type}')
-    DEFAULT_USER_AVATAR = ({'png'}, 'embed/avatars/{discriminator}.{type}')
-    USER_AVATAR = ({'png', 'jpeg', 'webp', 'gif'}, 'avatars/{user}/{hash}.{type}')
-    APPLICATION_ICON = ({'png', 'jpeg', 'webp'}, 'app-icons/{application}/{hash}.{type}')
-    APPLICATION_ASSET = ({'png', 'jpeg', 'webp'}, 'app-assets/{application}/{asset}.{type}')
+    CUSTOM_EMOJI        = ({'png', 'gif'}, 'emojis/{emoji}.{type}')  # noqa
+    GUILD_ICON          = ({'png', 'jpeg', 'webp'}, 'icons/{guild}/{hash}.{type}')  # noqa
+    GUILD_SPLASH        = ({'png', 'jpeg', 'webp'}, 'splashes/{guild}/{hash}.{type}')  # noqa
+    DEFAULT_USER_AVATAR = ({'png'}, 'embed/avatars/{discriminator}.{type}')  # noqa
+    USER_AVATAR         = ({'png', 'jpeg', 'webp', 'gif'}, 'avatars/{user}/{hash}.{type}')  # noqa
+    APPLICATION_ICON    = ({'png', 'jpeg', 'webp'}, 'app-icons/{application}/{hash}.{type}')  # noqa
+    APPLICATION_ASSET   = ({'png', 'jpeg', 'webp'}, 'app-assets/{application}/{asset}.{type}')  # noqa
 
     def verify_file_type(self, file_type: str):
         if file_type == 'jpg':
@@ -26,12 +26,12 @@ class Endpoints(enum.Enum):
 
 class PlebAvatar(enum.IntEnum):
     # The Discord standard avatars for people without real profile pictures.
-    BLURPLE = 0
-    GREY    = 1
-    GRAY    = 1
-    GREEN   = 2
-    ORANGE  = 3
-    RED     = 4
+    BLURPLE = 0  # noqa
+    GREY    = 1  # noqa
+    GRAY    = 1  # noqa
+    GREEN   = 2  # noqa
+    ORANGE  = 3  # noqa
+    RED     = 4  # noqa
 
     def __str__(self):
         return self.name.lower()

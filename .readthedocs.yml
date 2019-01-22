@@ -1,4 +1,6 @@
-formats: []
+formats:
+  - htmlzip
+  - epub
 
 build:
   image: latest
