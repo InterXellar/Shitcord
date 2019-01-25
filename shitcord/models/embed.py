@@ -4,7 +4,7 @@ import datetime
 
 from .colour import Colour
 from .errors import TooLarge
-from ..utils import time
+from ..utils import parse_time
 
 __all__ = ['EmbedThumbnail', 'EmbedVideo', 'EmbedImage', 'EmbedProvider',
            'EmbedAuthor', 'EmbedFooter', 'EmbedField', 'Embed']
@@ -381,7 +381,7 @@ class Embed:
         self.url = data.get('url', EmbedEmpty)
 
         if 'timestamp' in data:
-            self.timestamp = time.parse_time(data['timestamp'])
+            self.timestamp = parse_time(data['timestamp'])
 
         if 'colour' in data:
             self.colour = Colour(data['colour'])

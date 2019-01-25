@@ -10,7 +10,7 @@ from .emoji import PartialEmoji
 from .member import Member
 from .user import User
 from ..http import rest_shit
-from ..utils.time import parse_time
+from ..utils import parse_time
 
 __all__ = ['Attachment', 'File', 'Message', 'MessageType']
 

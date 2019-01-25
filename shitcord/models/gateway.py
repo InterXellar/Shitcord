@@ -117,11 +117,14 @@ class Presence:
     __slots__ = ('user', 'roles', 'game', 'guild_id', 'status', 'activities')
 
     def __init__(self, data, http):
-        self.user = User(data['user'], http)
-        self.roles = data['roles']
-        self.guild_id = data['guild_id']
-        self.status = data['status']
-        self.activities = [Activity(activity, http) for activity in data['activities']]
+        self.user = data.get('user')
+        if self.user:
+            self.user = User(self.user, http)
+
+        self.roles = data.get('roles')
+        self.guild_id = data.get('guild_id')
+        self.status = data.get('status')
+        self.activities = [Activity(activity, http) for activity in data.get('activities', [])]
 
         self.game = data.get('game')
         if self.game:
