@@ -233,6 +233,7 @@ def rest_shit(*, cls=None):
         if not inspect.iscoroutinefunction(func):
             raise TypeError('Callback must be a coroutine.')
 
+        @functools.wraps(func)
         def wrapper(*args, **kwargs):
             return cls(func, *args, **kwargs)
 

@@ -5,6 +5,7 @@ from itertools import starmap
 
 
 class HTTPCodes(IntEnum):
+    INVALID_TOKEN             = 0    # noqa
     BAD_REQUEST               = 400  # noqa
     UNAUTHORIZED              = 401  # noqa
     FORBIDDEN                 = 403  # noqa

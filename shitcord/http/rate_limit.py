@@ -2,6 +2,8 @@
 
 import datetime
 import logging
+import time
+from collections import OrderedDict
 from email.utils import parsedate_to_datetime
 
 import trio
@@ -9,96 +11,188 @@ import trio
 logger = logging.getLogger(__name__)
 
 
-class APIResponse:
-    def __init__(self, bucket, response, parsed):
-        self._bucket = bucket
-        self._response = response
-        self._parsed = parsed
-        self._headers = self._response.headers
+class CooldownBucket:
+    """This class wraps around a bucket to handle rate limits.
 
-        # Get all relevant headers for rate limit handling and parse them into a useful format.
-        self.date = self._headers.get('Date')
-        self.remaining = int(self._headers.get('X-RateLimit-Remaining', 0))
-        self.reset = self._parse_reset(int(self._headers.get('X-RateLimit-Reset', 0)))
-        self.is_global = self._headers.get('X-RateLimit-Global', False)
+    Instances of this class are stored by the rate limiter and constantly updated.
+    It provides all necessary helper properties and methods to effectively detect
+    and handle rate limits for the corresponding bucket.
+
+    Parameters
+    ----------
+    bucket : tuple
+        The bucket this :class:`shitcord.http.CooldownBucket` should handle.
+
+    Attributes
+    ----------
+    bucket : tuple
+        The bucket this :class:`shitcord.http.CooldownBucket` should handle.
+    date : datetime.datetime
+        A datetime object representing the time the current headers were received.
+    remaining : int
+        The amount of requests that can be still made to the bucket before exhausting
+        a rate limit.
+    reset : float
+        The interval in seconds after which the rate limits for this bucket will reset.
+    cooled_down : :class:`trio.Event`
+        An event used for indicating the current cooldown state of the bucket.
+    """
+
+    __slots__ = ('bucket', 'date', 'remaining', 'reset', 'cooled_down')
+
+    def __init__(self, bucket, response):
+        self.bucket = bucket
+
+        # these will be set later
+        self.date = None
+        self.remaining = 0
+        self.reset = None
+
+        self.cooled_down = trio.Event()
+        self.cooled_down.set()
+
+        self.update(response)
 
     def __repr__(self):
-        return '<APIResponse for bucket {} with headers {}>'.format(self._bucket, self._headers)
+        if isinstance(self.bucket, str):
+            bucket = (self.bucket,)
+        else:
+            bucket = self.bucket
 
-    def _parse_reset(self, reset):
-        now = parsedate_to_datetime(self.date)
-        res = datetime.datetime.fromtimestamp(reset, datetime.timezone.utc)
-        return (res - now).total_seconds() + .2
+        return '<shitcord.http.APIResponse {}>'.format(' '.join(bucket))
 
     @property
-    def is_rate_limited(self):
-        return self._response.status_code == 429
+    def get_current_time(self):
+        """Returns a datetime object denoting the current time in UTC.
+        This is especially necessary for determining the actual rate limit reset time.
+        """
+
+        return datetime.datetime.now(datetime.timezone.utc)
+
+    @property
+    def cooling_down(self):
+        """Whether this bucket is currently being cooled down or not."""
+
+        return not self.cooled_down.is_set()
 
     @property
     def will_rate_limit(self):
-        return self._response.status_code != 429 and self.remaining == 0
+        """Whether the next request will cause a rate limit or not."""
 
-    @property
-    def global_limit(self):
-        return self.is_rate_limited and self.is_global
+        return self.get_current_time <= self.reset and self.remaining == 0
 
-    @property
-    def retry_after(self):
-        return self._parsed['retry_after'] / 1000.0
+    def update(self, response):
+        """Updates the current APIResponse object with response headers
+        and body from a new request to the corresponding bucket.
+        """
 
-    @staticmethod
-    async def cooldown(duration):
-        """Returns a cooldown for the current API response."""
+        headers = response.headers
 
-        logger.debug('Sleeping for %s seconds due to an exhausted rate limit...', duration)
-        try:
-            return await trio.sleep(duration)
-        except ValueError:
-            # trio.sleep doesn't like negative values.
-            # For the case of a stupid rate limit reset header that computes to a negative rate limit duration
-            # we have to catch the ValueError.
-            pass
+        # Rate limit headers is basically all or nothing.
+        # If one of the rate limit headers is missing, any
+        # other rate limit headers also won't be included.
+        # It basically doesn't really matter what header to check here.
+        if 'X-RateLimit-Remaining' not in headers:
+            return
+
+        self.date = parsedate_to_datetime(headers.get('Date'))
+        self.remaining = int(headers.get('X-RateLimit-Remaining'))
+        self.reset = datetime.datetime.fromtimestamp(int(headers.get('X-RateLimit-Reset')), datetime.timezone.utc)
+
+    async def wait(self):
+        """|coro|
+
+        Waits until the bucket has been cooled down.
+
+        Returns
+        -------
+        float
+            The duration we waited for.
+        """
+
+        start = time.time()
+        await self.cooled_down.wait()
+        return time.time() - start
+
+    async def cooldown(self):
+        """|coro|
+
+        Cools down a bucket.
+        """
+
+        if self.reset < self.get_current_time:
+            raise ValueError('Cannot cooldown for a negative time period.')
+
+        self.cooled_down.clear()
+        delay = (self.reset - self.date).total_seconds() + .5
+        logger.debug('Cooling down bucket %s for %s seconds.', self, delay)
+        await trio.sleep(delay)
+        self.cooled_down.set()
+
+        return delay
 
 
 class Limiter:
+    """Represents a Limiter for handling per-bucket rate limits.
+
+    By storing buckets with corresponding :class:`shitcord.http.CooldownBucket` objects,
+    the limiter keeps track of all received API responses and updates the CooldownBuckets
+    with the corresponding headers. Once a CooldownBucket indicates a rate limit has been
+    exhausted, the limiter blocks until the limit resets before making another request to
+    the same bucket. This also handles global rate limits and returns the total cooldown duration.
+
+    Attributes
+    ----------
+    buckets : :class:`collections.OrderedDict`
+        An OrderedDict to keep track of the buckets.
+    """
+
     def __init__(self):
-        self.no_global_limit = trio.Event()
-        self.no_global_limit.set()
+        self.buckets = OrderedDict()
 
-    async def __call__(self, bucket, response, parsed):
-        resp = APIResponse(bucket, response, parsed)
-        async with trio.open_nursery() as nursery:
-            await nursery.start(self._cooldown_task, resp, nursery)
+    async def chill(self, bucket):
+        """|coro|
 
-    async def _cooldown_task(self, response, nursery, *, task_status=trio.TASK_STATUS_IGNORED):
-        duration, global_limit = self.get_cooldown(response)
+        Checks if it's safe to make a request to the given bucket.
 
-        nursery.start_soon(response.cooldown, duration)
-        task_status.started()
+        For this case, this method will return immediately.
+        Otherwise it will block until the bucket has been cooled down.
 
-        if global_limit:
-            with trio.move_on_after(duration):
-                self.no_global_limit.clear()
-            self.no_global_limit.set()
+        This also handles global rate limits.
 
-    @staticmethod
-    def get_cooldown(resp):
-        if resp.will_rate_limit:
-            # In this case, the next request is going to cause a rate limit.
-            duration = resp.reset
-            logger.debug('Next request is going to cause a rate limit. We wait for a Rate Limit Reset in %s seconds.', duration)
+        Parameters
+        ----------
+        bucket : tuple
+            The bucket to check.
+        """
 
-        elif resp.is_rate_limited:
-            # For this case, we are already rate-limited.
-            duration = resp.retry_after
-            logger.debug('You are being rate limited. We will retry it in %s seconds.', duration)
+        return await self._get_limit_duration('global_rate_limit') + await self._get_limit_duration(bucket)
 
-            if resp.global_limit:
-                # Global rate limit. Not good.
-                logger.debug('Global rate limit has been exhausted.')
+    async def _get_limit_duration(self, bucket):
+        if bucket in self.buckets:
+            if self.buckets[bucket].cooling_down:
+                return await self.buckets[bucket].wait()
 
+            if self.buckets[bucket].will_rate_limit:
+                return await self.buckets[bucket].cooldown()
+
+        return 0
+
+    def update_bucket(self, bucket, response):
+        """Updates a :class:`shitcord.http.CooldownBucket` for a given bucket.
+
+        Parameters
+        ----------
+        bucket : tuple
+            The bucket to initialize :class:`shitcord.http.CooldownBucket` with.
+        response : :class:`asks.Response`
+            A response object to retrieve rate limit headers from.
+        """
+
+        if 'X-RateLimit-Global' in response.headers:
+            bucket = 'global_rate_limit'
+
+        if bucket in self.buckets:
+            self.buckets[bucket].update(response)
         else:
-            # We are neither rate-limited nor have we exhausted a rate limit bucket.
-            duration = 0
-
-        return duration, resp.global_limit
+            self.buckets[bucket] = CooldownBucket(bucket, response)
