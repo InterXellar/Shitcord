@@ -79,7 +79,7 @@ rst_prolog = """
 
 .. |rs| replace:: This function is a |restshit|_.
 .. |restshit| replace:: *RESTShit*
-.. _restshit: https://shitcord.readthedocs.io/en/async/get-started.html#restshit
+.. _restshit: https://shitcord.readthedocs.io/en/async/get-started.html#the-restshit-interface
 """
 
 # Add any paths that contain templates here, relative to this directory.

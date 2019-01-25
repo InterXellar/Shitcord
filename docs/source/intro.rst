@@ -45,10 +45,10 @@ It is used for connecting and interacting with the Discord Gateway.
 it is a great library striving for safety, correctness and ergonomics and is based on wsproto.
 Check out the project `here <https://github.com/HyperionGray/trio-websocket>`_.
 
-.. _installing:
+.. _installation:
 
-Installing
-----------
+Installation
+------------
 
 As this library is still WIP, it isn't published on PyPI yet.
 So you can install the most recent version from GitHub: ::
@@ -77,7 +77,7 @@ at any time, we don't provide a usage example yet. Also, it is not very user-fri
 stay patient unless you are willing to read the source code.
 
 .. literalinclude:: examples/beginners_example.py
-    :lineno:
+    :linenos:
 
 Support
 -------
