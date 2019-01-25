@@ -96,7 +96,7 @@ class Guild(Model):
         self.icon = data['icon']
         self.splash = data['splash']
         self.owner = data.get('owner')
-        self.owner_id = data['owner.id']
+        self.owner_id = data['owner_id']
         self.permissions = data.get('permissions')
         self.region = data['region']
         self.afk_channel_id = data['afk_channel_id']
@@ -152,11 +152,13 @@ class PartialGuild(Model):
     ----------
     snowflake: :class:`Snowflake`
         A :class:`Snowflake` object that represents the guild's ID.
+    id : int
+        The ID of the guild.
     unavailable : bool
         Whether this guild is available or not.
     """
 
-    __slots__ = ('unavailable')
+    __slots__ = ('unavailable',)
 
     def __init__(self, data, http):
         super().__init__(data['id'], http=http)

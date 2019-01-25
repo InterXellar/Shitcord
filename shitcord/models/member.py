@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from .role import Role
-from .user import _BaseUser
+from .user import User
 
 
-class Member(_BaseUser):
+class Member(User):
 
     """Represents a Member model from the Discord API.
 
@@ -25,6 +24,8 @@ class Member(_BaseUser):
         Represents the member's nickname. None if no nickname is set.
     roles: List[:class:`Role`]
         A list of role objects the member has attached.
+    guild_id : int, optional
+        The ID of the guild this member belongs to.
     joined_at : :class:`datetime.datetime`
         Representing when the member joined the guild..
     deaf : bool
@@ -38,7 +39,9 @@ class Member(_BaseUser):
     def __init__(self, data, http):
         super().__init__(data['user'], http=http)
         self.nick = data.get('nick')
-        self.roles = [Role(role, http) for role in data['roles']]
+        if data.get('guild_id'):  # provided by the guild_member_add event
+            self.guild_id = int(data['guild_id'])
+        self.roles = [int(role_id) for role_id in data['roles']]
         self.joined_at = data['joined_at']
         self.deaf = data['deaf']
         self.mute = data['mute']
