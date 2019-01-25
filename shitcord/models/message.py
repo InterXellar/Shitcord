@@ -220,7 +220,7 @@ class Message(Model):
         else:
             self.author = User(author, http)
 
-        self.content = data['content']
+        self.content = data.get('content', '')
         self.timestamp = parse_time(data['timestamp'])
         self.edited_timestamp = parse_time(data.get('edited_timestamp'))
         self.tts = data['tts']
