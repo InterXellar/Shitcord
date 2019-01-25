@@ -36,7 +36,7 @@ class EventEmitter:
         callback : :class:`typing.Callable`, optional
             The callback that should be executed when the event was dispatched.
         recurring : bool, optional
-            Whether or not the event should only be executed more than once. Defaults to True.
+            Whether or not the event should be dispatched more than one time. Defaults to True.
         """
 
         # When called as function
@@ -75,7 +75,7 @@ class EventEmitter:
         ----------
         event : str
             The name of the event where a callback should be removed.
-        callback : :class:`typing.Callable`
+        callback : Callable
             The callback reference.
         """
 
@@ -100,6 +100,16 @@ class EventEmitter:
         elif event in self._callbacks:
             self._callbacks.pop(event, None)
 
+    async def _emit(self, dispatch_event, *args, nursery):
+        for event in self._callbacks.get(dispatch_event, []):
+            if not inspect.iscoroutinefunction(event.func):
+                raise EventError('Only coroutines are allowed for event emitting.')
+
+            if not event.recurring:
+                self._callbacks[dispatch_event].remove(event)
+
+            nursery.start_soon(event.func, *args)
+
     async def emit(self, dispatch_event, *args, nursery=None):
         """Emits an event with some arguments.
 
@@ -121,18 +131,11 @@ class EventEmitter:
             Will be raised when an unregistered event was emitted.
         """
 
-        for event in self._callbacks.get(dispatch_event, []):
-            if not inspect.iscoroutinefunction(event.func):
-                raise EventError('Only coroutines are allowed for event emitting.')
-
-            if not event.recurring:
-                self._callbacks[dispatch_event].remove(event)
-
-            if not nursery:
-                async with trio.open_nursery() as nursery:
-                    nursery.start_soon(event.func, *args)
-            else:
-                nursery.start_soon(event.func, *args)
+        if not nursery:
+            async with trio.open_nursery() as nursery:
+                await self._emit(dispatch_event, *args, nursery=nursery)
+        else:
+            await self._emit(dispatch_event, *args, nursery=nursery)
 
     async def emit_after(self, delay, event, *args):
         """Emits an event with some arguments after a given amount of time.
