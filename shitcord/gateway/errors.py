@@ -11,12 +11,3 @@ class ConnectingFailed(GatewayException):
 
 class NoMoreReconnects(GatewayException):
     """Will be raised when the client has exceeded the total amount of allowed reconnects."""
-
-
-class InvalidEvent(GatewayException):
-    """Will be raised when an event without parser was received."""
-
-    def __init__(self, event_name):
-        super().__init__('Received event without parser: {}'.format(event_name))
-
-        self.event = event_name

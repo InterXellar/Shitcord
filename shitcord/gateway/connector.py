@@ -15,10 +15,11 @@ from wsproto.frame_protocol import Opcode as WSOpcodes
 
 from .encoding import ENCODERS
 from .errors import GatewayException, NoMoreReconnects
+from .events import parse_event
 from .gateway import WebSocketClient
 from .opcodes import Opcodes
 from .serialization import identify, resume
-from ..utils import gateway, event_emitter
+from ..utils import gateway
 
 logger = logging.getLogger(__name__)
 none_func = lambda *a, **kw: None
@@ -88,7 +89,7 @@ class DiscordWebSocketClient(WebSocketClient):
     emitter : :class:`EventEmitter`
         An event emitter for emitting received gateway events.
     token : str
-        The bot's token.
+        The bot token.
     """
 
     VERSION = 6
@@ -104,7 +105,7 @@ class DiscordWebSocketClient(WebSocketClient):
         # Necessary Gateway data
         url, shard, self.session_start_limit = args
         self._gateway_url = self.format_url(url)
-        self.shard_id, self.shard_count = 0, shard  # Currently only support for one shard.
+        self.shard_id, self.shard_count = kwargs.get('shard_id', 0), kwargs.get('shard_count', shard)  # Currently only support for one shard.
 
         # For connection state
         self.session_id = None
@@ -133,9 +134,6 @@ class DiscordWebSocketClient(WebSocketClient):
         self._buffer = bytearray()
         self._inflator = zlib.decompressobj()
 
-        # For emitting received opcodes
-        self.emitter = event_emitter.EventEmitter()
-
         # Bind corresponding callbacks for opcodes sent by the Discord API
         self.emitter.on('DISPATCH', self._handle_dispatch)
         self.emitter.on('HEARTBEAT', self._handle_heartbeat)
@@ -148,9 +146,11 @@ class DiscordWebSocketClient(WebSocketClient):
     async def from_client(cls, client):
         gateway_data = await client.api.get_gateway_bot()
 
+        cls.api = client.api
+        cls.emitter = client.emitter
         cls.token = client.api.token
 
-        return cls(*gateway_data, **client.config)
+        return cls(*gateway_data, **client.config.to_dict())
 
     def format_url(self, url: str):
         url += '?version={version}&encoding={encoding}'
@@ -197,16 +197,16 @@ class DiscordWebSocketClient(WebSocketClient):
         self._sent_messages.get().append(message)
         await self._con.send_message(self.encoder.encode(message))
 
-    async def send(self, opcode: typing.Union[Opcodes, int], payload: typing.Union[dict, int, None]):
+    async def send(self, opcode: typing.Union[Opcodes, int], payload: typing.Union[dict, int] = None):
         """|coro|
 
         Sends a message to the Discord gateway and handles the rate limit.
 
         Parameters
         ----------
-        opcode
+        opcode : :class:`shitcord.gateway.Opcodes`, int
             The opcode that should be sent.
-        payload
+        payload : dict, int, optional
             The payload that should be sent.
         """
 
@@ -237,8 +237,11 @@ class DiscordWebSocketClient(WebSocketClient):
         if event == 'ready':
             self.session_id = payload['session_id']
 
-        # TODO: Caching & Updating already cached objects.
-        # TODO:
+        # TODO: Caching & Updating already cached models.
+
+        name, handler = parse_event(event, payload, self.api.get_api())
+
+        await self.emitter.emit(name, handler)
 
     async def _handle_heartbeat(self, _):
         logger.debug('Heartbeat requested by the Discord Gateway.')

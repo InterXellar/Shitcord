@@ -35,7 +35,7 @@ class WebSocketClient(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def send(self, opcode, payload):
+    async def send(self, opcode, payload=None):
         """|coro|
 
         Sends a message to the opened WebSocketConnection via ``await self._con.send_message(...)``.
@@ -59,13 +59,13 @@ class WebSocketClient(abc.ABC):
         raise NotImplementedError
 
     async def _message_task(self):
-        while not self._con.closed:
-            try:
-                message = await self._con.get_message()
-            except trio_websocket.ConnectionClosed:
-                break
+        try:
+            message = await self._con.get_message()
+        except trio_websocket.ConnectionClosed:
+            return
 
-            await self.on_message(message)
+        await self.on_message(message)
+        await self._message_task()
 
     @abc.abstractmethod
     async def on_open(self):
