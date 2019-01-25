@@ -1,6 +1,6 @@
 import shitcord
 
-client = shitcord.Client()
+client = shitcord.Client(SomeConfig())
 
 
 @client.on('message')
@@ -9,4 +9,4 @@ async def on_message(message):
         await message.respond("What's This?")
 
 
-client.start('Token')
+client.start()
