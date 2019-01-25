@@ -33,7 +33,7 @@ class HTTP:
 
         self.headers = {
             'User-Agent': self.create_user_agent(),
-            'Authorization': kwargs.get('application_type', 'Bot') + ' ' + self._token,
+            'Authorization': kwargs.get('application_type', 'Bot').strip() + ' ' + self._token,
         }
 
     async def make_request(self, route, fmt=None, **kwargs):
@@ -66,6 +66,7 @@ class HTTP:
 
         fmt = fmt or {}
         retries = kwargs.pop('retries', 0)
+        bucket_fmt = {key: value if key in ('guild', 'channel') else '' for key, value in fmt.items()}
 
         # Prepare the headers
         if 'headers' in kwargs:
@@ -77,21 +78,21 @@ class HTTP:
             kwargs['headers']['X-Audit-Log-Reason'] = quote(kwargs['reason'], '/ ')
 
         method = route[0].value
-        endpoint = route[1].format(**fmt)
-        bucket = (method, endpoint)
+        bucket_endpoint = route[1].format(**bucket_fmt)
+        bucket = (method, bucket_endpoint)
+        url = self.BASE_URL + route[1].format(**fmt)
+
         logger.debug('Performing request to bucket %s with headers %s', bucket, kwargs['headers'])
 
-        # For the case of a global rate limit
-        if not self.limiter.no_global_limit.is_set():
-            await self.limiter.no_global_limit.wait()
+        duration = await self.limiter.chill(bucket)
+        if duration > 0:
+            logger.debug('Bucket %s has been cooled down!', bucket)
 
-        url = self.BASE_URL + endpoint
         response = await self._session.request(method, url, **kwargs)
-        data = self.parse_response(response)
+        data = response._actual_response = self.parse_response(response)
         status = response.status_code
 
-        # Rate Limit stuff
-        await self.limiter(bucket, response, data)
+        self.limiter.update_bucket(bucket, response)
 
         if 200 <= status < 300:
             # These status codes indicate successful requests. So just return the JSON response.
@@ -113,7 +114,6 @@ class HTTP:
             logger.debug(self.LOG_FAILED.format(bucket=bucket, code=status, error=response.content, seconds=backoff))
             await trio.sleep(backoff)
 
-            # Recurse
             return await self.make_request(route, fmt, retries=retries, **kwargs)
 
     @staticmethod

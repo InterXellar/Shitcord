@@ -4,7 +4,7 @@ import meme
 import trio
 from PIL import Image
 
-client = shitcord.Client()
+client = shitcord.Client(SomeConfig())
 
 
 # In most cases, blocking doesn't even affect you.
@@ -27,4 +27,4 @@ async def on_message(message):
         await message.respond(result)  # Sends 'Finished.'
 
 
-client.start('Token')
+client.start()

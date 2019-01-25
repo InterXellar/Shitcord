@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import enum
-from datetime import datetime
 
 from . import abc
 from .base import Model
+from ..utils import parse_time
 
 __all__ = ['_channel_from_payload', 'PartialChannel', 'TextChannel', 'DMChannel', 'VoiceChannel', 'GroupDMChannel', 'CategoryChannel']
 
@@ -13,15 +13,12 @@ def _channel_from_payload(payload, http):
     channel_type = IntChannelTypes(payload['type']).name
     channel_cls = _ChannelTypes[channel_type].value
 
-    return channel_cls(payload, http)
+    try:
+        channel = channel_cls(payload, http)
+    except KeyError:  # assuming we're missing keys, just create a PartialChannel instance
+        channel = PartialChannel(payload, http)
 
-
-def _get_as_datetime(payload, key):
-    item = payload.get(key)
-    if not item:
-        return None
-
-    return datetime.utcfromtimestamp(item)
+    return channel
 
 
 class _BaseChannel(Model):
@@ -132,7 +129,7 @@ class TextChannel(_BaseChannel, abc.GuildChannel, abc.Sendable):
         self.last_message_id = data.get('last_message_id')
         self.rate_limit = data.get('rate_limit_per_user', 0)
         self.parent_id = data.get('parent_id')
-        self.last_pinned = _get_as_datetime(data, 'last_pin_timestamp')
+        self.last_pinned = parse_time(data.get('last_pin_timestamp'))
 
     def __repr__(self):
         return '<shitcord.TextChannel id={} name={} guild_id={} nsfw={}>'.format(self.id, self.name, self.guild_id, self.nsfw)
@@ -164,7 +161,7 @@ class DMChannel(_BaseChannel, abc.PrivateChannel, abc.Sendable):
 
         self.last_message_id = data.get('last_message_id')
         self.recipients = data['recipients']
-        self.last_pinned = _get_as_datetime(data, 'last_pin_timestamp')
+        self.last_pinned = parse_time(data.get('last_pin_timestamp'))
 
     def __repr__(self):
         return '<shitcord.DMChannel id={}>'.format(self.id)
@@ -218,8 +215,8 @@ class VoiceChannel(_BaseChannel, abc.Connectable, abc.GuildChannel):
 class GroupDMChannel(_BaseChannel, abc.PrivateChannel, abc.Sendable):
     """Represents a GroupDMChannel model from the Discord API.
 
-    This is actually quite similar to `DMChannel` except that `User`s can
-    be invited to these groups and they show up some parallels to `Guild`.
+    This is actually quite similar to :class:`DMChannel` except that `User`s can
+    be invited to these groups and they show up some parallels to :class:`Guild`.
 
     Attributes
     ----------
@@ -254,7 +251,7 @@ class GroupDMChannel(_BaseChannel, abc.PrivateChannel, abc.Sendable):
         self.icon = data.get('icon')
         self.owner_id = data['owner_id']
         self.application_id = data.get('application_id')
-        self.last_pinned = _get_as_datetime(data, 'last_pin_timestamp')
+        self.last_pinned = parse_time(data.get('last_pin_timestamp'))
 
     def __repr__(self):
         return '<shitcord.GroupDMChannel id={} name={} owner_id={}>'.format(self.id, self.name, self.owner_id)
@@ -263,8 +260,8 @@ class GroupDMChannel(_BaseChannel, abc.PrivateChannel, abc.Sendable):
 class CategoryChannel(_BaseChannel, abc.GuildChannel):
     """Represents a CategoryChannel model from the Discord API.
 
-    Categories always belong to a `Guild`.
-    Categories are usually parents to `TextChannel` objects but
+    Categories always belong to a :class:`Guild`.
+    Categories are usually parents to :class:`TextChannel` objects but
     actually have a similar behavior to actual channels.
 
     Attributes

@@ -7,7 +7,7 @@ from .gateway import Presence
 from .role import Role
 from .voice import VoiceState
 from .channel import _channel_from_payload
-from .channel import _get_as_datetime
+from ..utils import parse_time
 
 
 class Guild(Model):
@@ -96,7 +96,7 @@ class Guild(Model):
         self.icon = data['icon']
         self.splash = data['splash']
         self.owner = data.get('owner')
-        self.owner_id = data['owner.id']
+        self.owner_id = data['owner_id']
         self.permissions = data.get('permissions')
         self.region = data['region']
         self.afk_channel_id = data['afk_channel_id']
@@ -114,26 +114,14 @@ class Guild(Model):
         self.widget_enabled = data.get('widget_enabled')
         self.widget_channel_id = data.get('widget_channel_id')
         self.system_channel_id = data['system_channel_id']
-        self.joined_at = _get_as_datetime(data, 'joined_at')
+        self.joined_at = parse_time(data.get('joined_at'))
         self.large = data.get('large')
         self.unavailable = data.get('unavailable')
         self.member_count = data.get('member_count')
-
-        self.members = data.get('members')
-        if self.members:
-            self.members = [Member(member, http) for member in self.members]
-
-        self.channels = data.get('channels')
-        if self.channels:
-            self.channels = [_channel_from_payload(channel, http) for channel in self.channels]
-
-        self.voice_states = data.get('voice_states')
-        if self.voice_states:
-            self.voice_states = [VoiceState(voice_state, http) for voice_state in self.voice_states]
-
-        self.presences = data.get('presences')
-        if self.presences:
-            self.presences = [Presence(presence, http) for presence in self.presences]
+        self.members = [Member(member, http) for member in data.get('members', [])]
+        self.channels = [_channel_from_payload(channel, http) for channel in data.get('channels', [])]
+        self.voice_states = [VoiceState(voice_state, http) for voice_state in data.get('voice_states', [])]
+        self.presences = [Presence(presence, http) for presence in data.get('presences', [])]
 
     def __str__(self):
         return self.name
@@ -152,11 +140,13 @@ class PartialGuild(Model):
     ----------
     snowflake: :class:`Snowflake`
         A :class:`Snowflake` object that represents the guild's ID.
+    id : int
+        The ID of the guild.
     unavailable : bool
         Whether this guild is available or not.
     """
 
-    __slots__ = ('unavailable')
+    __slots__ = ('unavailable',)
 
     def __init__(self, data, http):
         super().__init__(data['id'], http=http)

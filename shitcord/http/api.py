@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import json
 import logging
 from contextlib import contextmanager
 
@@ -7,7 +8,7 @@ import contextvars
 
 from .http import HTTP
 from .routes import Endpoints
-from ..models import Connection, DMChannel, GroupDMChannel, Invite, User, Webhook
+from .. import models
 
 logger = logging.getLogger(__name__)
 
@@ -59,34 +60,111 @@ class API:
 
         return API(self.token)
 
+    # --- Channel ------------------------------------------------------------------- #
+
+    async def create_message(self, channel_id, content=None, nonce=None, tts=False, files=None, embed=None):
+        payload = {
+            'tts': tts,
+        }
+
+        if content:
+            payload['content'] = content
+
+        if embed:
+            payload['embed'] = embed.to_json()
+
+        if nonce:
+            payload['nonce'] = nonce
+
+        if files:
+            if len(files) == 1:
+                attachments = {
+                    'file': tuple(files[0]),
+                }
+            else:
+                attachments = {
+                    'file{}'.format(index): tuple(file) for index, file in enumerate(files)
+                }
+
+            message = await self.make_request(Endpoints.CREATE_MESSAGE, dict(channel=channel_id),
+                                              files=attachments, data={'payload_json': json.dumps(payload)})
+            return models.Message(message, self.get_api())
+
+        message = await self.make_request(Endpoints.CREATE_MESSAGE, dict(channel=channel_id), json=payload)
+        return models.Message(message, self.get_api())
+
+    # --- Audit Log ----------------------------------------------------------------- #
+
+    async def get_guild_audit_log(self, guild_id, user_id=None, action_type=None, before=None, after=None):
+        params = optional(**{
+            'user_id': user_id,
+            'action_type': action_type,
+            'before': before,
+            'after': after,
+        })
+
+        entries = await self.make_request(Endpoints.GET_GUILD_AUDIT_LOG, dict(guild=guild_id), params=params)
+        return entries  # TODO: Audit Log model
+
+    # --- Emoji --------------------------------------------------------------------- #
+
+    async def list_guild_emojis(self, guild_id):
+        emojis = await self.make_request(Endpoints.LIST_GUILD_EMOJIS, dict(guild=guild_id))
+        return [models.Emoji(guild_id, emoji, self.get_api()) for emoji in emojis]
+
+    async def get_guild_emoji(self, guild_id, emoji_id):
+        emoji = await self.make_request(Endpoints.GET_GUILD_EMOJI, dict(guild=guild_id, emoji=emoji_id))
+        return models.Emoji(guild_id, emoji, self.get_api())
+
+    async def create_guild_emoji(self, guild_id, name, image, roles, reason=None):
+        payload = optional(**{
+            'name': name,
+            'image': image,
+            'roles': roles,
+        })
+
+        emoji = await self.make_request(Endpoints.CREATE_GUILD_EMOJI, dict(guild=guild_id), json=payload, reason=reason)
+        return models.Emoji(guild_id, emoji, self.get_api())
+
+    async def modify_guild_emoji(self, guild_id, emoji_id, name, roles, reason=None):
+        payload = optional(**{
+            'name': name,
+            'roles': roles,
+        })
+
+        emoji = await self.make_request(Endpoints.MODIFY_GUILD_EMOJI, dict(guild=guild_id, emoji=emoji_id), json=payload, reason=reason)
+        return models.Emoji(guild_id, emoji, self.get_api())
+
+    async def delete_guild_emoji(self, guild_id, emoji_id, reason=None):
+        return await self.make_request(Endpoints.DELETE_GUILD_EMOJI, dict(guild=guild_id, emoji=emoji_id), reason=reason)
+
     # --- Invite -------------------------------------------------------------------- #
 
     async def get_invite(self, invite_code, with_counts=None):
         invite = await self.make_request(Endpoints.GET_INVITE, dict(invite=invite_code), params=optional(with_counts=with_counts))
-        return Invite(invite, self.get_api())
+        return models.Invite(invite, self.get_api())
 
     async def delete_invite(self, invite_code, reason=None):
         invite = await self.make_request(Endpoints.DELETE_INVITE, dict(invite=invite_code), reason=reason)
-        return Invite(invite, self.get_api())
+        return models.Invite(invite, self.get_api())
 
     # --- User ---------------------------------------------------------------------- #
 
     async def get_current_user(self):
         user = await self.make_request(Endpoints.GET_CURRENT_USER)
-        return User(user, self.get_api())
+        return models.User(user, self.get_api())
 
     async def get_user(self, user_id):
         user = await self.make_request(Endpoints.GET_USER, dict(user=user_id))
-        return User(user, self.get_api())
+        return models.User(user, self.get_api())
 
     async def modify_current_user(self, username=None, avatar=None):
         user = await self.make_request(Endpoints.MODIFY_CURRENT_USER, json=optional(username=username, avatar=avatar))
-        return User(user, self.get_api())
+        return models.User(user, self.get_api())
 
     async def get_current_user_guilds(self, before=None, after=None, limit=None):
-        # guilds = await self.make_request(Endpoints.GET_CURRENT_USER_GUILDS, params=optional(before=before, after=after, limit=limit))
-        # TODO: Implement the PartialGuild model!!!!!1111!!!
-        # return [PartialGuild(guild, self.get_api()) for guild in guilds]
+        guilds = await self.make_request(Endpoints.GET_CURRENT_USER_GUILDS, params=optional(before=before, after=after, limit=limit))
+        return [models.PartialGuild(guild, self.get_api()) for guild in guilds]
         pass
 
     async def leave_guild(self, guild_id):
@@ -94,24 +172,25 @@ class API:
 
     async def get_user_dms(self):
         channels = await self.make_request(Endpoints.GET_USER_DMS)
-        return [DMChannel(channel, self.get_api()) for channel in channels]
+        return [models.DMChannel(channel, self.get_api()) for channel in channels]
 
     async def create_dm(self, user_id):
         channel = await self.make_request(Endpoints.CREATE_DM, json={'recipient_id': user_id})
-        return DMChannel(channel, self.get_api())
+        return models.DMChannel(channel, self.get_api())
 
     async def create_group_dm(self, access_tokens=None, nicks=None):
         channel = await self.make_request(Endpoints.CREATE_GROUP_DM, json=optional(access_tokens=access_tokens, nicks=nicks))
-        return GroupDMChannel(channel, self.get_api())
+        return models.GroupDMChannel(channel, self.get_api())
 
     async def get_user_connections(self):
         connections = await self.make_request(Endpoints.GET_USER_CONNECTIONS)
-        return [Connection(connection) for connection in connections]
+        return [models.Connection(connection) for connection in connections]
 
     # --- Voice --------------------------------------------------------------------- #
 
     async def list_voice_regions(self):
-        return await self.make_request(Endpoints.LIST_VOICE_REGIONS)
+        regions = await self.make_request(Endpoints.LIST_VOICE_REGIONS)
+        return [models.VoiceRegion(region, self.get_api()) for region in regions]
 
     # --- Webhook ------------------------------------------------------------------- #
 
@@ -121,23 +200,23 @@ class API:
         }.update(optional(avatar=avatar))
 
         webhook = await self.make_request(Endpoints.CREATE_WEBHOOK, dict(channel=channel_id), json=payload)
-        return Webhook(webhook, self.get_api())
+        return models.Webhook(webhook, self.get_api())
 
     async def get_channel_webhooks(self, channel_id):
         webhooks = await self.make_request(Endpoints.GET_CHANNEL_WEBHOOKS, dict(channel=channel_id))
-        return [Webhook(webhook, self.get_api()) for webhook in webhooks]
+        return [models.Webhook(webhook, self.get_api()) for webhook in webhooks]
 
     async def get_guild_webhooks(self, guild_id):
         webhooks = await self.make_request(Endpoints.GET_GUILD_WEBHOOKS, dict(guild=guild_id))
-        return [Webhook(webhook, self.get_api()) for webhook in webhooks]
+        return [models.Webhook(webhook, self.get_api()) for webhook in webhooks]
 
     async def get_webhook(self, webhook_id):
         webhook = await self.make_request(Endpoints.GET_WEBHOOK, dict(webhook=webhook_id))
-        return Webhook(webhook, self.get_api())
+        return models.Webhook(webhook, self.get_api())
 
     async def get_webhook_with_token(self, webhook_id, webhook_token):
         webhook = await self.make_request(Endpoints.GET_WEBHOOK_WITH_TOKEN, dict(webhook=webhook_id, token=webhook_token))
-        return Webhook(webhook, self.get_api())
+        return models.Webhook(webhook, self.get_api())
 
     async def modify_webhook(self, webhook_id, name=None, avatar=None, channel_id=None, reason=None):
         webhook = await self.make_request(
@@ -146,7 +225,7 @@ class API:
             json=optional(name=name, avatar=avatar, channel_id=channel_id),
             reason=reason
         )
-        return Webhook(webhook, self.get_api())
+        return models.Webhook(webhook, self.get_api())
 
     async def modify_webhook_with_token(self, webhook_id, webhook_token, name=None, avatar=None, reason=None):
         webhook = await self.make_request(
@@ -155,7 +234,7 @@ class API:
             json=optional(name=name, avatar=avatar),
             reason=reason
         )
-        return Webhook(webhook, self.get_api())
+        return models.Webhook(webhook, self.get_api())
 
     async def delete_webhook(self, webhook_id, reason=None):
         return await self.make_request(Endpoints.DELETE_WEBHOOK, dict(webhook=webhook_id), reason=reason)
@@ -164,18 +243,15 @@ class API:
         return await self.make_request(Endpoints.DELETE_WEBHOOK_WITH_TOKEN, dict(webhook=webhook_id, token=webhook_token), reason=reason)
 
     async def execute_webhook(self, webhook_id, webhook_token, data, wait=False):
-        # message = await self.make_request(
-        #     Endpoints.EXECUTE_WEBHOOK,
-        #     dict(webhook=webhook_id, token=webhook_token),
-        #     json=optional(**data),
-        #     params={'wait': wait}
-        # )
+        message = await self.make_request(
+            Endpoints.EXECUTE_WEBHOOK,
+            dict(webhook=webhook_id, token=webhook_token),
+            json=optional(**data),
+            params={'wait': wait}
+        )
 
-        # if wait:
-        #     # TODO: IMPLEMENT THE FUCKING MESSAGE MODEL!!!111!!!!
-        #     # return Message(message, self.get_api())
-        #     pass
-        pass
+        if wait:
+            return models.Message(message, self.get_api())
 
     # --- OAuth2 -------------------------------------------------------------------- #
 

@@ -21,6 +21,10 @@ class SyncMeta:
         return attr
 
 
+class Client(shitcord.Client, SyncMeta):
+    pass
+
+
 class DiscordWebSocketClient(shitcord.gateway.DiscordWebSocketClient, SyncMeta):
     pass
 
@@ -33,6 +37,14 @@ Color = Colour
 
 
 class Emoji(shitcord.Emoji, SyncMeta):
+    pass
+
+
+class Guild(shitcord.Guild, SyncMeta):
+    pass
+
+
+class PartialGuild(shitcord.PartialGuild, SyncMeta):
     pass
 
 
@@ -49,6 +61,18 @@ class PartialChannel(shitcord.PartialChannel, SyncMeta):
 
 
 class PartialEmoji(shitcord.PartialEmoji, SyncMeta):
+    pass
+
+
+class Attachment(shitcord.Attachment, SyncMeta):
+    pass
+
+
+class File(shitcord.File, SyncMeta):
+    pass
+
+
+class Message(shitcord.Message, SyncMeta):
     pass
 
 
@@ -84,6 +108,14 @@ class User(shitcord.User, SyncMeta):
     pass
 
 
+class VoiceState(shitcord.VoiceState, SyncMeta):
+    pass
+
+
+class VoiceRegion(shitcord.VoiceRegion):
+    pass
+
+
 class Webhook(shitcord.Webhook, SyncMeta):
     pass
 
@@ -92,11 +124,19 @@ class HTTP(shitcord.http.HTTP, SyncMeta):
     pass
 
 
+class CooldownBucket(shitcord.http.CooldownBucket, SyncMeta):
+    pass
+
+
 class Limiter(shitcord.http.Limiter, SyncMeta):
     pass
 
 
 class API(shitcord.http.API, SyncMeta):
+    pass
+
+
+class RESTShit(shitcord.http.RESTShit, SyncMeta):
     pass
 
 

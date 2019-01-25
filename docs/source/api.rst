@@ -30,6 +30,23 @@ There are two main ways to retrieve the version of Shitcord.
 
     A string representation of the version, e.g. ``'0.0.2-beta0'``.
 
+.. _client:
+
+Shitcord comes with an intuitive client that combines Gateway and REST API
+functionality in a simple, easy to use interface.
+
+ClientConfig
+------------
+
+.. autoclass:: ClientConfig
+    :members:
+
+Client
+------
+
+.. autoclass:: Client
+    :members:
+
 .. _http:
 
 HTTP
@@ -41,6 +58,18 @@ make your own requests instead of using the library's interface. E.g. when new A
 published that aren't implemented yet. Or cases where you need a raw response. The full HTTP interface
 is documented in the following. **However, don't use this if you aren't 100% sure you know what you
 are doing! The implemented interface is way more user-friendly and safe to use.**
+
+CooldownBucket
+~~~~~~~~~~~~~~
+
+.. autoclass:: shitcord.http.CooldownBucket()
+    :members:
+
+Limiter
+~~~~~~~
+
+.. autoclass:: shitcord.http.Limiter()
+    :members:
 
 HTTP
 ~~~~
@@ -78,11 +107,18 @@ ETFEncoder
 .. autoclass:: shitcord.gateway.encoding.ETFEncoder()
     :members:
 
-Gateway
-~~~~~~~
+WebSocketClient
+~~~~~~~~~~~~~~~
+
+.. autoclass:: shitcord.gateway.WebSocketClient()
+    :members:
+
+DiscordWebSocketClient
+~~~~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: shitcord.gateway.DiscordWebSocketClient()
     :members:
+    :inherited-members:
 
 .. _models:
 
@@ -262,6 +298,14 @@ Member
     :members:
     :inherited-members:
 
+Message
+~~~~~~~
+
+.. autoclass:: Message()
+    :members:
+
+    .. autofunction:: respond
+
 Permissions
 ~~~~~~~~~~~
 
@@ -349,9 +393,6 @@ This is the recommended way to look up the codes you received for you to know wh
 .. autoexception:: shitcord.gateway.ConnectingFailed
 
 .. autoexception:: shitcord.gateway.NoMoreReconnects
-
-.. autoexception:: shitcord.gateway.InvalidEvent
-    :members:
 
 .. autoexception:: shitcord.models.ModelError
 

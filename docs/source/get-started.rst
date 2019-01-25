@@ -60,10 +60,10 @@ All you have to do is quite simple:
     It is recommended to not mix up ``import shitcord`` and ``import shitcord.sync as shitcord`` in your bot.
     It is preferred to stick with one of them in your entire bot.
 
-.. _rest_shit
+.. _rest_shit_interface
 
-RESTShit
---------
+The RESTShit Interface
+----------------------
 
 Let me introduce you to `RESTShit`! This is our way of performing requests to the
 Discord REST API. Ideally speaking, this is a terminal between **what** should be done

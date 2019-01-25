@@ -12,6 +12,8 @@ class _BaseEmoji(Model):
     ----------
     snowflake : :class:`Snowflake`
         A :class:`Snowflake` object representing the emoji's ID.
+    id : int
+        The emoji's ID.
     name : str
         Either the custom emoji's name or a unicode representation of the emoji.
     """
@@ -43,6 +45,8 @@ class PartialEmoji(_BaseEmoji):
     ----------
     snowflake : :class:`Snowflake`, optional
         A :class:`Snowflake` object that represents the emoji's ID.
+    id : int
+        The emoji's ID.
     name : str
         Either the custom emoji's name or a unicode representation of the emoji.
     animated : bool, optional
@@ -84,13 +88,15 @@ class Emoji(_BaseEmoji):
     ----------
     snowflake : :class:`Snowflake`, optional
         A :class:`Snowflake` object that represents the emoji's ID.
+    id : int
+        The emoji's ID.
     name : str
         Either the custom emoji's name or a unicode representation of the emoji.
     guild_id : int
         The ID of the Guild this emoji belongs to.
     roles : list
         A list of role IDs which are whitelisted for this emoji.
-    user : :class:`User`
+    user : :class:`User`, optional
         A :class`User` object representing the creator of the emoji.
     require_colons : bool, optional
         A boolean indicating whether this emoji requires colons or not.
@@ -107,7 +113,8 @@ class Emoji(_BaseEmoji):
 
         self.guild_id = guild_id
         self.roles = list(map(int, data.get('roles', [])))
-        self.user = User(data['user'], self._http)
+        if data.get('user'):
+            self.user = User(data['user'], self._http)
         self.require_colons = data.get('require_colons', False)
         self.managed = data.get('managed', False)
         self.animated = data.get('animated', False)

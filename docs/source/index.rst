@@ -20,6 +20,7 @@ However, you can either use it with an async/await syntax or completely without.
 
    intro.rst
    get-started.rst
+   event-reference.rst
    api.rst
 
 

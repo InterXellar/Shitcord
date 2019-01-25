@@ -54,9 +54,9 @@ class _BaseUser(Model, abc.DiscordUser):
     def __init__(self, data, http):
         super().__init__(data['id'], http=http)
 
-        self.name = data['username']
-        self.discriminator = int(data['discriminator'])
-        self.avatar_hash = data['avatar']
+        self.name = data.get('username')
+        self.discriminator = int(data['discriminator']) if data.get('discriminator') else None
+        self.avatar_hash = data.get('avatar')
 
     def __str__(self):
         return '{0.name}#{0.discriminator}'.format(self)

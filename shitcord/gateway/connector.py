@@ -8,22 +8,24 @@ import typing
 import zlib
 from contextlib import contextmanager
 
-import contextvars
+import contextvars  # trio includes a backport for lower Python versions than 3.7
 import trio
 import trio_websocket
 from wsproto.frame_protocol import Opcode as WSOpcodes
 
 from .encoding import ENCODERS
 from .errors import GatewayException, NoMoreReconnects
+from .events import parse_event
+from .gateway import WebSocketClient
 from .opcodes import Opcodes
 from .serialization import identify, resume
-from ..utils import gateway, event_emitter
+from ..utils import gateway
 
 logger = logging.getLogger(__name__)
 none_func = lambda *a, **kw: None
 
 
-class DiscordWebSocketClient:
+class DiscordWebSocketClient(WebSocketClient):
     """Implements a WebSocket client for the Discord Gateway v6.
 
     WebSockets will be used to establish a connection to the Discord Gateway.
@@ -87,7 +89,7 @@ class DiscordWebSocketClient:
     emitter : :class:`EventEmitter`
         An event emitter for emitting received gateway events.
     token : str
-        The bot's token.
+        The bot token.
     """
 
     VERSION = 6
@@ -103,7 +105,7 @@ class DiscordWebSocketClient:
         # Necessary Gateway data
         url, shard, self.session_start_limit = args
         self._gateway_url = self.format_url(url)
-        self.shard_id, self.shard_count = 0, shard  # Currently only support for one shard.
+        self.shard_id, self.shard_count = kwargs.get('shard_id', 0), kwargs.get('shard_count', shard)  # Currently only support for one shard.
 
         # For connection state
         self.session_id = None
@@ -132,9 +134,6 @@ class DiscordWebSocketClient:
         self._buffer = bytearray()
         self._inflator = zlib.decompressobj()
 
-        # For emitting received opcodes
-        self.emitter = event_emitter.EventEmitter()
-
         # Bind corresponding callbacks for opcodes sent by the Discord API
         self.emitter.on('DISPATCH', self._handle_dispatch)
         self.emitter.on('HEARTBEAT', self._handle_heartbeat)
@@ -147,9 +146,11 @@ class DiscordWebSocketClient:
     async def from_client(cls, client):
         gateway_data = await client.api.get_gateway_bot()
 
+        cls.api = client.api
+        cls.emitter = client.emitter
         cls.token = client.api.token
 
-        return cls(*gateway_data, **client.config)
+        return cls(*gateway_data, **client.config.to_dict())
 
     def format_url(self, url: str):
         url += '?version={version}&encoding={encoding}'
@@ -196,16 +197,16 @@ class DiscordWebSocketClient:
         self._sent_messages.get().append(message)
         await self._con.send_message(self.encoder.encode(message))
 
-    async def send(self, opcode: typing.Union[Opcodes, int], payload: typing.Union[dict, int, None]):
+    async def send(self, opcode: typing.Union[Opcodes, int], payload: typing.Union[dict, int] = None):
         """|coro|
 
         Sends a message to the Discord gateway and handles the rate limit.
 
         Parameters
         ----------
-        opcode
+        opcode : :class:`shitcord.gateway.Opcodes`, int
             The opcode that should be sent.
-        payload
+        payload : dict, int, optional
             The payload that should be sent.
         """
 
@@ -213,26 +214,34 @@ class DiscordWebSocketClient:
         await self._send(opcode, payload)
 
     async def __heartbeat_task(self):
-        await self._receive_heartbeat.receive()
+        if not self.interval:
+            await self._receive_heartbeat.receive()
 
-        while not self.shutting_down.is_set() or self._con.closed:
-            if not self._heartbeat_ack:
-                logger.error('No HEARTBEAT_ACK received from that crap. Forcing a reconnect.')
-                self._heartbeat_ack = True
-                await self._close(4000, 'Zombied connection, you shitters!')
-                break
+        if not self._heartbeat_ack:
+            logger.error('No HEARTBEAT_ACK received from that crap. Forcing a reconnect.')
+            self._heartbeat_ack = True
+            await self._close(4000, 'Zombied connection, you shitters!')
+            return
 
-            logger.debug('Sending Heartbeat with Sequence: %s.', self.sequence)
-            await self._send(Opcodes.HEARTBEAT, self.sequence)
-            self._last_sent = time.perf_counter()
-            self._heartbeat_ack = False
-            await trio.sleep(self.interval / 1000)
+        logger.debug('Sending Heartbeat with Sequence: %s.', self.sequence)
+        await self._send(Opcodes.HEARTBEAT, self.sequence)
+        self._last_sent = time.perf_counter()
+        self._heartbeat_ack = False
+
+        await trio.sleep(self.interval / 1000)
+
+        if not self.shutting_down.is_set() or self._con.closed:
+            await self.__heartbeat_task()
 
     async def _handle_dispatch(self, event, payload):
         if event == 'ready':
             self.session_id = payload['session_id']
 
-        # TODO: Caching & Updating already cached objects.
+        # TODO: Caching & Updating already cached models.
+
+        name, handler = parse_event(event, payload, self.api.get_api())
+
+        await self.emitter.emit(name, handler)
 
     async def _handle_heartbeat(self, _):
         logger.debug('Heartbeat requested by the Discord Gateway.')
@@ -261,15 +270,6 @@ class DiscordWebSocketClient:
         self.latency = ack_time - self._last_sent
         logger.debug('Received HEARTBEAT_ACK.')
         self._heartbeat_ack = True
-
-    async def _message_task(self):
-        while not self.shutting_down.is_set() or self._con.closed:
-            try:
-                message = await self._con.get_message()
-            except trio_websocket.ConnectionClosed:
-                break
-
-            await self.on_message(message)
 
     def _decompress(self, message):
         if self.zlib_compressed:
@@ -405,7 +405,7 @@ class DiscordWebSocketClient:
 
             await self.shutting_down.wait()
 
-        await self.on_close(con.closed.code, con.closed.reason)
+        await self.on_close(con.closed.code.value, con.closed.reason)
 
     async def _start(self):
         async with trio.open_nursery() as nursery:
@@ -425,8 +425,3 @@ class DiscordWebSocketClient:
     async def _close(self, code, reason=None):
         await self._con.aclose(code, reason)
         self.shutting_down.set()
-
-    def start(self):
-        """Starts the client."""
-
-        trio.run(self._start)

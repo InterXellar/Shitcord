@@ -22,6 +22,7 @@ __url__ = 'https://github.com/itsVale/Shitcord'
 import logging
 from collections import namedtuple
 
+from .client import *
 from .http import *
 from .gateway import *
 from .models import *
