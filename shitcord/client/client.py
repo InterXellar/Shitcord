@@ -110,7 +110,7 @@ class Client:
         # these attributes will be set later
         self.api = None
         self.ws = None
-        self.user = None
+        self.app_info = None
 
         logger.level = self._get_logging_level(self.config.logging_level)
 
@@ -140,7 +140,7 @@ class Client:
         # test the passed token
         try:
             # TODO: Wrap this into an object
-            self.user = await self.api.get_current_application_info()
+            self.app_info = await self.api.get_current_application_info()
         except ShitRequestFailed as error:
             if error.status_code.value == 0:
                 raise RuntimeError('Unable to login. An improper token has been passed.')
@@ -157,7 +157,8 @@ class Client:
         """
 
         await self.ws.close()
-        self.ws._nursery.cancel_scope.cancel()
+        del self.api
+        del self.ws
 
     def start(self):
         """Runs the client.
