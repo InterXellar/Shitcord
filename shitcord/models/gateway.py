@@ -63,20 +63,25 @@ class Activity:
     name : str
         The activity's name.
     type : int
-        The type of the activity
+        The type of the activity.
     url : str, optional
         The URL of the stream, only when stream type is 1.
     """
 
     __slots__ = ('name', 'type', 'url')
 
-    def __init__(self, data, activity_type: typing.Union[int, ActivityType] = ActivityType.PLAYING):
-        self.name = data['name']
+    def __init__(self, *, name='', activity_type: typing.Union[int, ActivityType] = ActivityType.PLAYING, url=None):
+        self.name = name
         self.type = activity_type.value if isinstance(activity_type, ActivityType) else activity_type
-        self.url = data.get('url')
+        self.url = url
+
+    @classmethod
+    def from_json(cls, data):
+        return cls(name=data.get('name', ''), activity_type=data.get('activity_type', 0), url=data.get('url'))
 
     def to_json(self):
-        if self.type is 1 and self.url is None:
+        # TODO: validate twitch.tv url
+        if self.type == 1 and self.url is None:
             raise ValueError('Streaming status isn\'t allowed without a valid twitch.tv url provided.')
 
         return {
@@ -124,8 +129,8 @@ class Presence:
         self.roles = data.get('roles')
         self.guild_id = data.get('guild_id')
         self.status = data.get('status')
-        self.activities = [Activity(activity, http) for activity in data.get('activities', [])]
+        self.activities = [Activity.from_json(activity) for activity in data.get('activities', [])]
 
         self.game = data.get('game')
         if self.game:
-            self.game = Activity(self.game, self.game['type'])
+            self.game = Activity.from_json(self.game)
