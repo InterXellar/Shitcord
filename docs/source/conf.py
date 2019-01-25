@@ -76,6 +76,10 @@ rst_prolog = """
 .. |coro| replace:: This function is a |corourl|_.
 .. |corourl| replace:: *coroutine*
 .. _corourl: https://docs.python.org/3/library/asyncio-task.html#coroutine
+
+.. |rs| replace:: This function is a |restshit|_.
+.. |restshit| replace:: *RESTShit*
+.. _restshit: https://shitcord.readthedocs.io/en/async/get-started.html#restshit
 """
 
 # Add any paths that contain templates here, relative to this directory.
