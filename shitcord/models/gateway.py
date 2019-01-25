@@ -70,14 +70,14 @@ class Activity:
 
     __slots__ = ('name', 'type', 'url')
 
-    def __init__(self, *, name='', activity_type: typing.Union[int, ActivityType] = ActivityType.PLAYING, url=None):
+    def __init__(self, *, name='', type: typing.Union[int, ActivityType] = ActivityType.PLAYING, url=None):
         self.name = name
-        self.type = activity_type.value if isinstance(activity_type, ActivityType) else activity_type
+        self.type = type.value if isinstance(type, ActivityType) else type
         self.url = url
 
     @classmethod
     def from_json(cls, data):
-        return cls(name=data.get('name', ''), activity_type=data.get('activity_type', 0), url=data.get('url'))
+        return cls(name=data.get('name', ''), type=data.get('activity_type', 0), url=data.get('url'))
 
     def to_json(self):
         # TODO: validate twitch.tv url
