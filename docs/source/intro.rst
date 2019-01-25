@@ -76,9 +76,8 @@ As the following documentation is incomplete and the library due to WIP may be c
 at any time, we don't provide a usage example yet. Also, it is not very user-friendly yet, so better
 stay patient unless you are willing to read the source code.
 
-.. code-block:: python
-
-    # Usage example will follow.
+.. literalinclude:: examples/beginners_example.py
+    :lineno:
 
 Support
 -------
