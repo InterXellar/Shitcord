@@ -141,7 +141,7 @@ class User(_BaseUser):
         The user's email address.
     flags : int, optional
         The user's account flags. None when permissions for accessing flags aren't granted.
-    permium_type : int, optional
+    premium_type : int, optional
         The user's premium type as an integer. None when permissions for accessing the premium type aren't granted.
     """
 
