@@ -25,7 +25,7 @@ class ClientConfig:
     ----------
     token : str
         The token to run your Discord bot.
-    prefix : Callable, str, list
+    prefix : Callable, str, list, optional
         The prefix(es) for your Discord bot. Can be a callable returning the prefix or a list containing the prefixes.
     description : str, optional
         An optional description about your Discord bot.
