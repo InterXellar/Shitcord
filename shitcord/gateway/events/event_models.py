@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from datetime import datetime
+from ...utils import parse_time
 
 from ... import models
 
@@ -62,7 +62,7 @@ class TypingStart:
         self.channel_id = data['channel_id']
         self.guild_id = int(data['guild_id']) if data.get('guild_id') else None
         self.user_id = data['user_id']
-        self.timestamp = datetime.fromtimestamp(data['timestamp'])
+        self.timestamp = parse_time(data['timestamp'])
 
 
 class VoiceServerUpdate:
@@ -80,3 +80,92 @@ class WebhooksUpdate:
     def __init__(self, data, _):
         self.guild_id = int(data['guild_id'])
         self.channel_id = int(data['channel_id'])
+
+
+class ChannelPinsUpdate:
+    __slots__ = ('channel_id', 'timestamp')
+
+    def __init__(self, data, _):
+        self.channel_id = int(data['channel_id'])
+        self.timestamp = parse_time(data.get('timestamp'))
+
+
+class GuildBanAdd:
+    __slots__ = ('guild_id', 'user')
+
+    def __init__(self, data, http):
+        self.guild_id = int(data['guild_id'])
+        self.user = models.User(data['user'], http)
+
+
+class GuildBanRemove:
+    __slots__ = ('guild_id', 'user')
+
+    def __init__(self, data, http):
+        self.guild_id = int(data['guild.id'])
+        self.user = models.User(data['user'], http)
+
+
+class GuildEmojisUpdate:
+    __slots__ = ('guild_id', 'emojis')
+
+    def __init__(self, data, http):
+        self.guild_id = int(data['guild.id'])
+        self.emojis = [models.Emoji(self.guild_id, emoji, http) for emoji in data['emojis']]
+
+
+class GuildIntegrationsUpdate:
+    __slots__ = ('guild_id')
+
+    def __init__(self, data, _):
+        self.guild_id = data['guild_id']
+
+
+class GuildMemberRemove:
+    __slots__ = ('guild_id', 'user')
+
+    def __init__(self, data, http):
+        self.guild_id = data['guild_id']
+        self.user = models.User(data['user'], http)
+
+
+class GuildMemberUpdate:
+    __slots__ = ('guild_id', 'roles', 'user', 'nick')
+
+    def __init__(self, data, http):
+        self.guild_id = data['guild_id']
+        self.roles = [int(role_id) for role_id in data.get('roles', [])]
+        self.user = models.User(data['user'], http)
+        self.nick = data['nick']
+
+
+class GuildMembersChunk:
+    __slots__ = ('guild_id', 'members')
+
+    def __init__(self, data, http):
+        self.guild_id = int(data['guild_id'])
+        self.members = [models.Member(member, http) for member in data['members']]
+
+
+class GuildRoleCreate:
+    __slots__ = ('guild_id', 'role')
+
+    def __init__(self, data, http):
+        self.guild_id = int(data['guild_id'])
+        self.role = models.Role(data['role'], http)
+
+
+class GuildRoleUpdate:
+    __slots__ = ('guild_id', 'role')
+
+    def __init__(self, data, http):
+        self.guild_id = int(data['guild_id'])
+        self.role = models.Role(data['role'], http)
+
+
+class GuildRoleDelete:
+    __slots__ = ('guild_id', 'role_id')
+
+    def __init__(self, data, _):
+        self.guild_id = int(data['guild_id'])
+        self.role_id = int(data['role_id'])
